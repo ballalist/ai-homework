@@ -1,0 +1,3180 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HW03 — AI Food Decision · ทองหล่อ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --pink: #e91e8c;
+        --pink2: #c2185b;
+        --green: #00bfa5;
+        --green2: #00c853;
+        --teal: #26c6da;
+        --orange: #ff6d00;
+        --bg: #e6e6e6;
+        --border: #222;
+        --win-sh: 4px 4px 0 rgba(0, 0, 0, 0.25);
+        --font: "JetBrains Mono", "Courier New", monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: var(--font);
+        background-color: var(--bg);
+        background-image: radial-gradient(
+          circle,
+          #bbbbbb 1.5px,
+          transparent 1.5px
+        );
+        background-size: 22px 22px;
+        color: #111;
+        min-height: 100vh;
+      }
+
+      /* ─── TOP HEADER BAR ─── */
+      .top-bar {
+        background: var(--pink);
+        border-bottom: 3px solid var(--border);
+        padding: 7px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .top-bar-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 2px;
+      }
+      .wc-row {
+        display: flex;
+        gap: 3px;
+      }
+      .wc {
+        width: 19px;
+        height: 19px;
+        background: rgba(255, 255, 255, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        color: #fff;
+        font-size: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: default;
+        font-family: var(--font);
+        line-height: 1;
+      }
+
+      /* ─── BACK NAV ─── */
+      .back-nav {
+        background: #1a1a1a;
+        padding: 7px 18px;
+        font-size: 12px;
+        color: #888;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .back-nav a {
+        color: var(--pink);
+        text-decoration: none;
+      }
+      .back-nav a:hover {
+        text-decoration: underline;
+      }
+      .back-nav .sep {
+        color: #444;
+      }
+
+      /* ─── AREA TABS ─── */
+      .area-bar {
+        background: #fff;
+        border-bottom: 2px solid var(--border);
+        padding: 10px 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .area-label {
+        font-size: 11px;
+        color: #888;
+        letter-spacing: 1px;
+        margin-right: 4px;
+      }
+      .area-btn {
+        padding: 6px 14px;
+        border: 2px solid var(--border);
+        font-family: var(--font);
+        font-size: 12px;
+        font-weight: 600;
+        background: #fff;
+        color: #555;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.1s;
+      }
+      .area-btn .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+        flex-shrink: 0;
+      }
+      .area-btn.active {
+        background: var(--pink);
+        border-color: var(--pink);
+        color: #fff;
+      }
+      .area-count {
+        margin-left: auto;
+        background: #333;
+        color: #fff;
+        padding: 3px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 2px;
+      }
+
+      /* ─── WRAPPER ─── */
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 14px 18px 50px;
+      }
+
+      /* ─── LIVE STATUS ─── */
+      .live-row {
+        background: #fff;
+        border: 2px solid var(--border);
+        box-shadow: var(--win-sh);
+        padding: 9px 14px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+      }
+      .live-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--green2);
+        animation: pulse 2s infinite;
+        flex-shrink: 0;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.35;
+        }
+      }
+      .live-lbl {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        color: #999;
+      }
+
+      /* ─── WINDOW PANEL ─── */
+      .win {
+        background: #fff;
+        border: 2px solid var(--border);
+        box-shadow: var(--win-sh);
+        margin-bottom: 20px;
+      }
+      .win-bar {
+        background: var(--pink);
+        border-bottom: 2px solid var(--border);
+        padding: 8px 13px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .win-bar.dark {
+        background: #1a1a2e;
+      }
+      .win-bar.teal {
+        background: var(--green);
+      }
+      .win-bar-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .win-body {
+        padding: 18px;
+      }
+
+      /* ─── STAT CARDS (icon box style) ─── */
+      .stat-grid {
+        display: grid;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .stat-grid.c3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .stat-grid.c4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .stat-box {
+        border: 2px solid var(--border);
+        padding: 16px 12px;
+        text-align: center;
+        background: #fff;
+      }
+      .stat-icon {
+        width: 50px;
+        height: 50px;
+        border: 2px solid var(--pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-size: 22px;
+        color: var(--pink);
+      }
+      .stat-icon.g {
+        border-color: var(--green);
+        color: var(--green);
+      }
+      .stat-icon.o {
+        border-color: var(--orange);
+        color: var(--orange);
+      }
+      .stat-icon.b {
+        border-color: #2196f3;
+        color: #2196f3;
+      }
+      .stat-val {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--pink);
+        line-height: 1;
+        display: block;
+      }
+      .stat-val.g {
+        color: var(--green);
+      }
+      .stat-val.o {
+        color: var(--orange);
+      }
+      .stat-val.b {
+        color: #2196f3;
+      }
+      .stat-lbl {
+        font-size: 10px;
+        color: #888;
+        margin-top: 6px;
+        letter-spacing: 0.5px;
+      }
+
+      /* ─── OBJECTIVES ─── */
+      .obj-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px 20px;
+      }
+      .obj-item {
+        display: flex;
+        gap: 10px;
+        font-size: 13px;
+        padding: 5px 0;
+        align-items: flex-start;
+      }
+      .obj-n {
+        color: var(--pink);
+        font-weight: 700;
+        min-width: 26px;
+        font-size: 12px;
+      }
+
+      /* ─── WORKFLOW STEPS ─── */
+      .flow {
+        display: flex;
+        align-items: stretch;
+        overflow-x: auto;
+      }
+      .flow-step {
+        flex: 1;
+        min-width: 130px;
+        border: 2px solid var(--border);
+        border-right: none;
+      }
+      .flow-step:last-child {
+        border-right: 2px solid var(--border);
+      }
+      .flow-num {
+        background: var(--pink);
+        color: #fff;
+        padding: 4px 9px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .flow-body {
+        padding: 12px 10px;
+      }
+      .flow-icon {
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 6px;
+      }
+      .flow-title {
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 3px;
+      }
+      .flow-desc {
+        font-size: 11px;
+        color: #666;
+        line-height: 1.5;
+      }
+
+      /* ─── TOOLS ─── */
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .tool-item {
+        border: 2px solid var(--border);
+        display: flex;
+        gap: 11px;
+        padding: 13px;
+      }
+      .tool-icon {
+        width: 42px;
+        height: 42px;
+        border: 2px solid var(--pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .tool-h {
+        font-size: 13px;
+        margin-bottom: 3px;
+      }
+      .tool-p {
+        font-size: 11px;
+        color: #666;
+      }
+      .tbadge {
+        display: inline-block;
+        padding: 2px 7px;
+        font-size: 10px;
+        letter-spacing: 1px;
+        margin-top: 5px;
+        font-weight: 700;
+      }
+      .tb-s {
+        background: #fff3e0;
+        color: #e65100;
+        border: 1px solid #ffb74d;
+      }
+      .tb-d {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border: 1px solid #81c784;
+      }
+      .tb-a {
+        background: #fce4ec;
+        color: #c2185b;
+        border: 1px solid #f48fb1;
+      }
+      .tb-n {
+        background: #e3f2fd;
+        color: #1565c0;
+        border: 1px solid #90caf9;
+      }
+      .tb-o {
+        background: #f3e5f5;
+        color: #6a1b9a;
+        border: 1px solid #ce93d8;
+      }
+
+      /* ─── DATA SOURCES ─── */
+      .src-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .src-item {
+        border: 2px solid var(--border);
+        display: flex;
+        align-items: stretch;
+      }
+      .src-n {
+        background: var(--pink);
+        color: #fff;
+        width: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+      .src-body {
+        padding: 11px 13px;
+        flex: 1;
+      }
+      .src-body h4 {
+        font-size: 13px;
+        margin-bottom: 3px;
+      }
+      .src-body p {
+        font-size: 12px;
+        color: #666;
+      }
+      .src-body a {
+        color: var(--pink);
+        font-size: 11px;
+      }
+
+      /* ─── SCORING TABLE ─── */
+      .stbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .stbl th {
+        background: #1a1a2e;
+        color: #fff;
+        padding: 9px 11px;
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 0.8px;
+      }
+      .stbl td {
+        padding: 9px 11px;
+        border-bottom: 1px solid #eee;
+        vertical-align: top;
+      }
+      .stbl tr:nth-child(even) td {
+        background: #f9f9f9;
+      }
+      .stbl tfoot td {
+        background: #1a1a2e;
+        color: #fff;
+        padding: 9px 11px;
+        font-weight: 700;
+      }
+      .spts {
+        color: var(--pink);
+        font-weight: 700;
+      }
+
+      /* ─── FILTERS BAR ─── */
+      .filter-bar {
+        border: 2px solid var(--border);
+        padding: 10px 13px;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        background: #fafafa;
+      }
+      .filter-bar label {
+        color: #888;
+        letter-spacing: 0.5px;
+      }
+      .filter-bar select {
+        border: 1px solid #bbb;
+        padding: 4px 8px;
+        font-family: var(--font);
+        font-size: 12px;
+        background: #fff;
+      }
+      .f-tag {
+        padding: 3px 10px;
+        background: #f5f5f5;
+        border: 1px solid #ccc;
+        font-size: 11px;
+        cursor: default;
+      }
+      .f-tag.active {
+        background: var(--pink);
+        color: #fff;
+        border-color: var(--pink);
+      }
+
+      /* ─── RANK TABLE ─── */
+      .rank-wrap {
+        overflow-x: auto;
+      }
+      .rtbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        min-width: 760px;
+      }
+      .rtbl th {
+        background: #1a1a2e;
+        color: #fff;
+        padding: 9px 10px;
+        text-align: center;
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        border-right: 1px solid #333;
+      }
+      .rtbl th.left {
+        text-align: left;
+      }
+      .rtbl td {
+        padding: 8px 10px;
+        text-align: center;
+        border-bottom: 1px solid #ebebeb;
+        border-right: 1px solid #f0f0f0;
+        vertical-align: middle;
+      }
+      .rtbl td.left {
+        text-align: left;
+      }
+      .rtbl tr:hover td {
+        background: #fff0f8;
+      }
+
+      /* rank badge */
+      .rbadge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        border: 2px solid #777;
+        font-weight: 800;
+        font-size: 12px;
+      }
+      .rb1 {
+        background: #ff9800;
+        color: #fff;
+        border-color: #e65100;
+      }
+      .rb2 {
+        background: #78909c;
+        color: #fff;
+        border-color: #455a64;
+      }
+      .rb3 {
+        background: #8d6e63;
+        color: #fff;
+        border-color: #5d4037;
+      }
+      .rbn {
+        background: #eee;
+        color: #666;
+        border-color: #ccc;
+      }
+
+      /* score badge */
+      .sbadge {
+        display: inline-block;
+        padding: 3px 8px;
+        font-weight: 700;
+        font-size: 13px;
+        border: 2px solid;
+        min-width: 46px;
+        text-align: center;
+      }
+      .sb-hi {
+        background: #e8f5e9;
+        color: #1b5e20;
+        border-color: #4caf50;
+      }
+      .sb-mid {
+        background: #fff8e1;
+        color: #e65100;
+        border-color: #ff9800;
+      }
+      .sb-lo {
+        background: #f5f5f5;
+        color: #555;
+        border-color: #bbb;
+      }
+
+      /* confidence bar */
+      .conf-bar {
+        width: 70px;
+        height: 8px;
+        background: #eee;
+        border: 1px solid #ddd;
+      }
+      .conf-fill {
+        height: 100%;
+        background: var(--green);
+      }
+
+      /* price */
+      .ptag {
+        font-size: 12px;
+        padding: 2px 7px;
+        border: 1px solid;
+      }
+      .p-lo {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-color: #a5d6a7;
+      }
+      .p-mid {
+        background: #fff8e1;
+        color: #f57f17;
+        border-color: #ffe082;
+      }
+      .p-hi {
+        background: #fbe9e7;
+        color: #bf360c;
+        border-color: #ffab91;
+      }
+      .rstar {
+        color: #ff9800;
+      }
+      .dim {
+        color: #888;
+        font-size: 11px;
+      }
+
+      /* score bars in rank table */
+      .sbar-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .sbar {
+        flex: 1;
+        height: 6px;
+        background: #eee;
+      }
+      .sbar-f {
+        height: 100%;
+        background: var(--green);
+      }
+      .snum {
+        font-weight: 700;
+        color: var(--green);
+        font-size: 13px;
+        min-width: 28px;
+      }
+
+      /* ─── SCENARIO TABS ─── */
+      .scen-tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .scen-btn {
+        padding: 7px 14px;
+        border: 2px solid var(--border);
+        font-family: var(--font);
+        font-size: 12px;
+        font-weight: 600;
+        background: #e0e0e0;
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.15s;
+      }
+      .scen-btn:hover {
+        opacity: 0.85;
+      }
+      .scen-btn.active {
+        box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+      }
+      .scen-btn[data-scen="safe"].active {
+        background: var(--pink);
+        color: #fff;
+      }
+      .scen-btn[data-scen="cheap"].active {
+        background: #ff9800;
+        color: #fff;
+      }
+      .scen-btn[data-scen="quick"].active {
+        background: #f9a825;
+        color: #fff;
+      }
+      .scen-btn[data-scen="biz"].active {
+        background: #00897b;
+        color: #fff;
+      }
+      .scen-btn[data-scen="team"].active {
+        background: #7b1fa2;
+        color: #fff;
+      }
+      .scen-btn .sd {
+        font-weight: 400;
+        opacity: 0.75;
+      }
+      .scen-btn.active .sd {
+        color: rgba(255, 255, 255, 0.8);
+        opacity: 1;
+      }
+
+      /* ─── TOP 3 CARDS ─── */
+      .top3-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .t3c {
+        border: 2px solid var(--border);
+        background: #fff;
+      }
+      .t3c-head {
+        padding: 11px 13px;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .t3c:nth-child(1) .t3c-head {
+        background: var(--pink);
+      }
+      .t3c:nth-child(2) .t3c-head {
+        background: #9e9e9e;
+      }
+      .t3c:nth-child(3) .t3c-head {
+        background: var(--orange);
+      }
+      .t3c-hl {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .t3c-hr {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+      }
+      .star-y {
+        color: #ffd600;
+      }
+      .t3c-body {
+        padding: 13px;
+      }
+      .t3c-name {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 7px;
+        line-height: 1.3;
+      }
+      .t3c-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .t3c-tag {
+        padding: 2px 7px;
+        font-size: 11px;
+        border: 1px solid #ccc;
+        color: #555;
+        background: #f5f5f5;
+      }
+      .t3c-tag.price {
+        background: var(--pink);
+        color: #fff;
+        border-color: var(--pink);
+      }
+      .scen-lbl {
+        font-size: 10px;
+        color: #888;
+        letter-spacing: 1.5px;
+        margin-bottom: 4px;
+      }
+      .t3-sbar-row {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 12px;
+      }
+      .t3-sbar {
+        flex: 1;
+        height: 7px;
+        background: #eee;
+      }
+      .t3-sbar-f {
+        height: 100%;
+        background: var(--green);
+      }
+      .t3-score {
+        font-weight: 700;
+        font-size: 17px;
+        color: var(--green);
+        min-width: 34px;
+        text-align: right;
+      }
+      .t3-checks {
+        list-style: none;
+      }
+      .t3-check {
+        font-size: 12px;
+        padding: 3px 0;
+        display: flex;
+        gap: 7px;
+        align-items: flex-start;
+      }
+      .t3-check-ico {
+        color: var(--green2);
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .t3c-foot {
+        margin-top: 11px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+        font-size: 11px;
+        color: #888;
+        line-height: 1.7;
+      }
+      .t3c-foot a {
+        color: var(--pink);
+        text-decoration: none;
+      }
+
+      /* ─── COMPARE ─── */
+      .cmp-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .cmp-card {
+        border: 2px solid var(--border);
+      }
+      .cmp-head {
+        background: #1a1a2e;
+        color: #fff;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+      }
+      .cmp-sec {
+        padding: 9px 12px;
+      }
+      .cmp-sec h4 {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        margin-bottom: 6px;
+      }
+      .cmp-sec.pros h4 {
+        color: var(--green2);
+      }
+      .cmp-sec.cons h4 {
+        color: #f44336;
+      }
+      .cmp-item {
+        font-size: 12px;
+        padding: 2px 0;
+        display: flex;
+        gap: 6px;
+      }
+      .cmp-sec.pros .cmp-item::before {
+        content: "✓";
+        color: var(--green2);
+        font-weight: 700;
+      }
+      .cmp-sec.cons .cmp-item::before {
+        content: "✕";
+        color: #f44336;
+        font-weight: 700;
+      }
+      .cmp-divider {
+        height: 1px;
+        background: #eee;
+        margin: 0 12px;
+      }
+      .cmp-note {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: 7px;
+        font-size: 11px;
+        color: #666;
+        margin: 9px 12px;
+      }
+
+      /* ─── PROMPT BLOCKS ─── */
+      .prompt-block {
+        border: 2px solid var(--border);
+        margin-bottom: 12px;
+      }
+      .prompt-bar {
+        background: #1a1a2e;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 11px;
+      }
+      .pb-u {
+        color: var(--pink);
+        letter-spacing: 1px;
+      }
+      .pb-a {
+        color: #64b5f6;
+        letter-spacing: 1px;
+      }
+      .pb-meta {
+        color: #555;
+        font-size: 10px;
+        margin-left: auto;
+      }
+      .prompt-body {
+        padding: 13px;
+        font-size: 12px;
+        color: #222;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        background: #fafafa;
+      }
+      .prompt-body em {
+        color: var(--pink);
+        font-style: normal;
+        font-weight: 700;
+      }
+      .prompt-body .resp {
+        color: #1a1a2e;
+      }
+
+      /* ─── FOOTER ─── */
+      footer {
+        background: #1a1a1a;
+        color: #555;
+        text-align: center;
+        padding: 18px;
+        font-size: 11px;
+        letter-spacing: 1px;
+      }
+      footer span {
+        color: var(--pink);
+      }
+
+      /* ─── RESPONSIVE ─── */
+      @media (max-width: 768px) {
+        .stat-grid.c3,
+        .stat-grid.c4 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .top3-grid,
+        .cmp-grid {
+          grid-template-columns: 1fr;
+        }
+        .tools-grid {
+          grid-template-columns: 1fr;
+        }
+        .flow {
+          flex-direction: column;
+        }
+        .obj-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOADING OVERLAY -->
+    <div
+      id="loadingOverlay"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: &quot;JetBrains Mono&quot;, monospace;
+        color: #fff;
+      "
+    >
+      <div style="font-size: 2rem; margin-bottom: 16px">🍜</div>
+      <div style="font-size: 14px; font-weight: 700; letter-spacing: 1px">
+        กำลังโหลดข้อมูลจาก Google Sheets...
+      </div>
+      <div
+        id="loadStatus"
+        style="font-size: 11px; color: #aaa; margin-top: 10px"
+      ></div>
+    </div>
+
+    <!-- SCRAPE MODAL -->
+    <div
+      id="scrapeModal"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 9998;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font);
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          border: 2px solid #222;
+          box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+          width: 400px;
+          max-width: 90vw;
+          border-radius: 0;
+        "
+      >
+        <!-- Modal Header -->
+        <div
+          style="
+            background: var(--pink);
+            color: #fff;
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #222;
+          "
+        >
+          <span>🕷️ SCRAPE ใหม่จาก APIFY</span>
+          <span
+            onclick="closeScrapeModal()"
+            style="cursor: pointer; font-size: 16px; user-select: none"
+            >×</span
+          >
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding: 16px">
+          <!-- Token Input -->
+          <div style="margin-bottom: 14px">
+            <label
+              style="
+                display: block;
+                font-size: 11px;
+                letter-spacing: 1px;
+                color: #666;
+                margin-bottom: 6px;
+              "
+            >
+              🔑 APIFY TOKEN
+            </label>
+            <input
+              type="password"
+              id="apifyToken"
+              placeholder="ใส่ Apify token ของคุณ (จะบันทึกใน localStorage)"
+              style="
+                width: 100%;
+                padding: 8px;
+                border: 2px solid #222;
+                font-family: var(--font);
+                font-size: 11px;
+                box-sizing: border-box;
+              "
+            />
+          </div>
+
+          <!-- Progress Log -->
+          <div
+            id="scrapeLog"
+            style="
+              background: #f8f8f8;
+              border: 1px solid #ddd;
+              padding: 10px;
+              height: 120px;
+              overflow-y: auto;
+              font-size: 10px;
+              color: #555;
+              margin-bottom: 14px;
+              line-height: 1.5;
+              display: none;
+            "
+          ></div>
+
+          <!-- Buttons -->
+          <div style="display: flex; gap: 8px">
+            <button
+              onclick="startApifyScrape()"
+              id="scrapeStartBtn"
+              style="
+                flex: 1;
+                padding: 10px;
+                background: var(--pink);
+                color: #fff;
+                border: 2px solid #222;
+                font-family: var(--font);
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                letter-spacing: 1px;
+              "
+            >
+              ▶ Scrape ทุกพื้นที่
+            </button>
+            <button
+              onclick="closeScrapeModal()"
+              id="scrapeCancelBtn"
+              style="
+                flex: 1;
+                padding: 10px;
+                background: #e0e0e0;
+                color: #333;
+                border: 2px solid #222;
+                font-family: var(--font);
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                letter-spacing: 1px;
+              "
+            >
+              ยกเลิก
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="top-bar-title">
+        🍜 &nbsp;AI FOOD DECISION ASSISTANT — HW03
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px">
+        <span
+          style="
+            font-family: var(--font);
+            font-size: 9px;
+            padding: 3px 8px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            letter-spacing: 1px;
+          "
+          >Apify Scraper</span
+        >
+        <span
+          style="
+            font-family: var(--font);
+            font-size: 9px;
+            padding: 3px 8px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            letter-spacing: 1px;
+          "
+          >Google Sheets</span
+        >
+        <span
+          style="
+            font-family: var(--font);
+            font-size: 9px;
+            padding: 3px 8px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            letter-spacing: 1px;
+          "
+          >Claude Sonnet 4.6</span
+        >
+        <span
+          style="
+            font-family: var(--font);
+            font-size: 9px;
+            padding: 3px 8px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            letter-spacing: 1px;
+          "
+          >Scoring Model</span
+        >
+        <div class="wc-row" style="margin-left: 8px">
+          <div class="wc">−</div>
+          <div class="wc">□</div>
+          <div class="wc">×</div>
+        </div>
+      </div>
+    </div>
+    <!-- DESCRIPTION BAR -->
+    <div
+      style="
+        background: #fff;
+        border-bottom: 2px solid #222;
+        padding: 10px 18px;
+        font-size: 13px;
+        color: #222;
+      "
+    >
+      ระบบช่วยเลือกร้านอาหารสำหรับทีม
+      <strong style="color: var(--pink)">8–12 คน</strong> จากข้อมูลที่ scrape มา
+      พร้อม scoring, scenario recommendation แบบอิง dataset
+    </div>
+
+    <!-- BACK NAV -->
+    <div class="back-nav">
+      <a href="../index.html">← กลับหน้าหลัก</a>
+      <span class="sep">/</span>
+      <span>Homework 03</span>
+      <span class="sep">/</span>
+      <span style="color: #999">AI Food Decision · ทองหล่อ</span>
+    </div>
+
+    <!-- AREA TABS -->
+    <div class="area-bar">
+      <span class="area-label">📍 AREA:</span>
+      <div class="area-btn" onclick="switchArea(this, 'asok')">
+        <span class="dot"></span>อโศก Terminal 21
+      </div>
+      <div class="area-btn" onclick="switchArea(this, 'siam')">
+        <span class="dot"></span>สยาม Siam Paragon
+      </div>
+      <div class="area-btn" onclick="switchArea(this, 'ari')">
+        <span class="dot"></span>อารีย์ Ari BTS
+      </div>
+      <div class="area-btn active" onclick="switchArea(this, 'thonglor')">
+        <span class="dot"></span>ทองหล่อ Thonglor
+      </div>
+      <div class="area-btn" onclick="switchArea(this, 'prompong')">
+        <span class="dot"></span>พร้อมพงษ์ Prompong
+      </div>
+      <span class="area-count" id="areaCount">10 ร้าน</span>
+    </div>
+
+    <!-- AREA UNAVAILABLE NOTICE -->
+    <div
+      id="areaNotice"
+      style="
+        display: none;
+        margin: 0 18px;
+        max-width: 1180px;
+        margin-left: auto;
+        margin-right: auto;
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          border: 2px solid #222;
+          box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+          padding: 32px;
+          text-align: center;
+          font-family: var(--font);
+          margin-top: 18px;
+        "
+      >
+        <div style="font-size: 2rem; margin-bottom: 10px">🚧</div>
+        <div
+          style="font-size: 14px; font-weight: 700; margin-bottom: 6px"
+          id="noticeTitle"
+        >
+          ยังไม่มีข้อมูล
+        </div>
+        <div style="font-size: 12px; color: #888">
+          พื้นที่นี้ยังไม่ได้ทำการ scrape · รายงานนี้ครอบคลุมเฉพาะ
+          <strong style="color: var(--pink)">ทองหล่อ Thonglor</strong>
+        </div>
+        <div style="margin-top: 14px">
+          <span
+            onclick="switchToThonglor()"
+            style="
+              display: inline-block;
+              padding: 7px 18px;
+              background: var(--pink);
+              color: #fff;
+              border: 2px solid #222;
+              cursor: pointer;
+              font-size: 12px;
+              font-weight: 700;
+            "
+            >← กลับไปดูทองหล่อ</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN WRAP -->
+    <div class="wrap">
+      <!-- LIVE STATUS -->
+      <div class="live-row">
+        <div class="live-dot"></div>
+        <span class="live-lbl">LIVE</span>
+        <strong>อ่านจาก Google Sheets</strong>
+        <span id="liveTimestamp" style="color: #888; font-size: 12px"
+          >· อัปเดต 18:42:09 · 5 มิถุนายน 2568</span
+        >
+        <span style="margin-left: auto; font-size: 11px; color: #999"
+          >Powered by n8n + Claude Sonnet 4.6</span
+        >
+        <button
+          onclick="showScrapeModal()"
+          style="
+            font-family: var(--font);
+            font-size: 10px;
+            padding: 4px 12px;
+            border: 2px solid #222;
+            background: var(--pink);
+            color: #fff;
+            cursor: pointer;
+            letter-spacing: 1px;
+            margin-left: 8px;
+            font-weight: 700;
+          "
+        >
+          🕷️ Scrape ใหม่
+        </button>
+        <button
+          onclick="loadSheetData()"
+          style="
+            font-family: var(--font);
+            font-size: 10px;
+            padding: 4px 12px;
+            border: 2px solid #333;
+            background: #f5f5f5;
+            cursor: pointer;
+            letter-spacing: 1px;
+            margin-left: 8px;
+          "
+        >
+          ⟳ รีโหลด
+        </button>
+      </div>
+
+      <!-- ─── 01 PROJECT OBJECTIVE ─── -->
+      <div class="win">
+        <div class="win-bar">
+          <div class="win-bar-title">🎯 &nbsp;PROJECT OBJECTIVE</div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <div class="stat-grid c3">
+            <div class="stat-box">
+              <div class="stat-icon">👥</div>
+              <span class="stat-val">8–12</span>
+              <div class="stat-lbl">คน กลุ่มเป้าหมาย</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-icon b">📍</div>
+              <span class="stat-val b">1 ย่าน</span>
+              <div class="stat-lbl">ทองหล่อ กรุงเทพฯ</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-icon g">✓</div>
+              <span class="stat-val g">10 ร้าน</span>
+              <div class="stat-lbl">คัดมาให้คะแนน</div>
+            </div>
+          </div>
+          <div
+            style="
+              font-size: 10px;
+              color: #888;
+              letter-spacing: 1.5px;
+              margin-bottom: 10px;
+            "
+          >
+            // OBJECTIVES
+          </div>
+          <div class="obj-grid">
+            <div class="obj-item">
+              <span class="obj-n">01</span>เก็บข้อมูลร้านอาหารจริงด้วย Apify
+              Google Maps Scraper
+            </div>
+            <div class="obj-item">
+              <span class="obj-n">02</span>Clean &amp; enrich data ด้วย Claude
+              AI — pros/cons/risk/uniqueness
+            </div>
+            <div class="obj-item">
+              <span class="obj-n">03</span>Scoring model 100 คะแนน 6 มิติ เพื่อ
+              rank ร้านอย่างเป็นระบบ
+            </div>
+            <div class="obj-item">
+              <span class="obj-n">04</span>Top 3 ร้านตาม scenario: ประหยัด /
+              รีบกิน / คุยงาน / ทีม 8–12
+            </div>
+            <div class="obj-item">
+              <span class="obj-n">05</span>n8n Orchestrate workflow Scrape → AI
+              → HTML อัตโนมัติ
+            </div>
+            <div class="obj-item">
+              <span class="obj-n">06</span>แนบ prompt หลักฐาน AI ทุกขั้นตอน —
+              ไม่ใช่ความรู้ทั่วไป
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── DATASET OVERVIEW ─── -->
+      <div class="win">
+        <div class="win-bar dark">
+          <div class="win-bar-title">📊 &nbsp;DATASET OVERVIEW</div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <p
+            style="
+              font-size: 11px;
+              color: #888;
+              margin-bottom: 14px;
+              letter-spacing: 0.3px;
+            "
+          >
+            Weighted 6-dimension scoring model · Rating 25% / Group 20% / Price
+            15% / Travel 15% / Menu 15% / Unique 10%
+          </p>
+          <div class="stat-grid c4">
+            <div class="stat-box">
+              <div
+                style="
+                  padding: 4px 8px;
+                  border-bottom: 2px solid #222;
+                  background: linear-gradient(90deg, #e91e8c, #e91e8caa);
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin: -16px -12px 12px;
+                "
+              >
+                <span
+                  style="
+                    font-family: var(--font);
+                    color: #fff;
+                    font-size: 7px;
+                    font-weight: 700;
+                    letter-spacing: 1px;
+                  "
+                  >RESTAURANTS</span
+                >
+                <span style="color: #fff; font-size: 8px">×</span>
+              </div>
+              <div class="stat-icon">🍽️</div>
+              <span class="stat-val" id="statRestaurants">10</span>
+              <div class="stat-lbl">ร้านในพื้นที่</div>
+            </div>
+            <div class="stat-box">
+              <div
+                style="
+                  padding: 4px 8px;
+                  border-bottom: 2px solid #222;
+                  background: linear-gradient(90deg, #2196f3, #2196f3aa);
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin: -16px -12px 12px;
+                "
+              >
+                <span
+                  style="
+                    font-family: var(--font);
+                    color: #fff;
+                    font-size: 7px;
+                    font-weight: 700;
+                    letter-spacing: 1px;
+                  "
+                  >AVG PRICE</span
+                >
+                <span style="color: #fff; font-size: 8px">×</span>
+              </div>
+              <div class="stat-icon b">฿</div>
+              <span class="stat-val b" id="statAvgPrice">฿290</span>
+              <div class="stat-lbl">เฉลี่ย/คน</div>
+            </div>
+            <div class="stat-box">
+              <div
+                style="
+                  padding: 4px 8px;
+                  border-bottom: 2px solid #222;
+                  background: linear-gradient(90deg, #9c27b0, #9c27b0aa);
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin: -16px -12px 12px;
+                "
+              >
+                <span
+                  style="
+                    font-family: var(--font);
+                    color: #fff;
+                    font-size: 7px;
+                    font-weight: 700;
+                    letter-spacing: 1px;
+                  "
+                  >FIT SCORE</span
+                >
+                <span style="color: #fff; font-size: 8px">×</span>
+              </div>
+              <div class="stat-icon g">★</div>
+              <span class="stat-val g" id="statFitScore">79.2</span>
+              <div class="stat-lbl">Weighted 6-dim (0–100)</div>
+            </div>
+            <div class="stat-box">
+              <div
+                style="
+                  padding: 4px 8px;
+                  border-bottom: 2px solid #222;
+                  background: linear-gradient(90deg, #ff9800, #ff9800aa);
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin: -16px -12px 12px;
+                "
+              >
+                <span
+                  style="
+                    font-family: var(--font);
+                    color: #fff;
+                    font-size: 7px;
+                    font-weight: 700;
+                    letter-spacing: 1px;
+                  "
+                  >GROUP OK</span
+                >
+                <span style="color: #fff; font-size: 8px">×</span>
+              </div>
+              <div class="stat-icon o">👥</div>
+              <span class="stat-val o" id="statGroupOk">8</span>
+              <div class="stat-lbl">รองรับ 8–12 คน</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 02 WORKFLOW OVERVIEW ─── -->
+      <div class="win">
+        <div class="win-bar">
+          <div class="win-bar-title">⚙️ &nbsp;WORKFLOW OVERVIEW</div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <div class="flow">
+            <div class="flow-step">
+              <div class="flow-num">STEP 01</div>
+              <div class="flow-body">
+                <span class="flow-icon">🕷️</span>
+                <div class="flow-title">Scraping</div>
+                <div class="flow-desc">
+                  Apify Google Maps Scraper<br />keyword: "restaurant<br />thonglor
+                  group"<br />→ 45+ รายชื่อร้าน
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">STEP 02</div>
+              <div class="flow-body">
+                <span class="flow-icon">📊</span>
+                <div class="flow-title">Google Sheets</div>
+                <div class="flow-desc">
+                  Raw data: ชื่อ, rating,<br />รีวิว, ราคา, ที่อยู่<br />→ Clean
+                  &amp; normalize<br />2 sheets
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">STEP 03</div>
+              <div class="flow-body">
+                <span class="flow-icon">🤖</span>
+                <div class="flow-title">AI Analysis</div>
+                <div class="flow-desc">
+                  Claude API per row<br />วิเคราะห์ข้อดี/ข้อเสีย<br />+ Scoring
+                  6 มิติ<br />→ enriched JSON
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">STEP 04</div>
+              <div class="flow-body">
+                <span class="flow-icon">⚙️</span>
+                <div class="flow-title">n8n Automation</div>
+                <div class="flow-desc">
+                  Webhook → Apify<br />→ Sheets → Claude<br />→ Template Node<br />→
+                  HTML output
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">STEP 05</div>
+              <div class="flow-body">
+                <span class="flow-icon">🌐</span>
+                <div class="flow-title">HTML Report</div>
+                <div class="flow-desc">
+                  Single-file HTML<br />data ฝังใน JS<br />เปิดได้ทันทีใน<br />เบราว์เซอร์
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              margin-top: 13px;
+              background: #f8f8f8;
+              border: 1px solid #ddd;
+              padding: 9px 11px;
+              font-size: 11px;
+              color: #666;
+            "
+          >
+            <strong style="color: #111">DATA FLOW:</strong> Apify Run → Webhook
+            → n8n → Google Sheets (raw) → Claude API (per row) → Sheets
+            (enriched) → n8n Template → <strong>index.html</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 03 TOOLS USED ─── -->
+      <div class="win">
+        <div class="win-bar">
+          <div class="win-bar-title">🔧 &nbsp;TOOLS USED</div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <div class="tools-grid">
+            <div class="tool-item">
+              <div class="tool-icon">🕷️</div>
+              <div>
+                <div class="tool-h">Apify — Google Maps Scraper</div>
+                <div class="tool-p">
+                  ดึงข้อมูล: ชื่อ, rating, รีวิว, ที่อยู่, ราคา, เวลาเปิด, พิกัด
+                  GPS จาก Google Maps โดยตรง
+                </div>
+                <span class="tbadge tb-s">DATA COLLECTION</span>
+              </div>
+            </div>
+            <div class="tool-item">
+              <div
+                class="tool-icon"
+                style="border-color: #2e7d32; color: #2e7d32"
+              >
+                📊
+              </div>
+              <div>
+                <div class="tool-h">Google Sheets</div>
+                <div class="tool-p">
+                  เก็บ raw_data + enriched_data แยก 2 sheet · รองรับ 10+ columns
+                  per row
+                </div>
+                <span class="tbadge tb-d">DATA STORAGE</span>
+              </div>
+            </div>
+            <div class="tool-item">
+              <div
+                class="tool-icon"
+                style="border-color: var(--pink); color: var(--pink)"
+              >
+                🤖
+              </div>
+              <div>
+                <div class="tool-h">Claude Sonnet 4.6 (Anthropic)</div>
+                <div class="tool-p">
+                  วิเคราะห์แต่ละร้าน: ให้คะแนน 6 มิติ, pros/cons, risk
+                  สำหรับกลุ่ม 8–12 คน
+                </div>
+                <span class="tbadge tb-a">AI ANALYSIS</span>
+              </div>
+            </div>
+            <div class="tool-item">
+              <div
+                class="tool-icon"
+                style="border-color: #1565c0; color: #1565c0"
+              >
+                ⚙️
+              </div>
+              <div>
+                <div class="tool-h">n8n (Self-hosted)</div>
+                <div class="tool-p">
+                  Orchestrate ทั้งหมด: Webhook → Claude API → Sheets → HTML
+                  auto-generate
+                </div>
+                <span class="tbadge tb-n">AUTOMATION</span>
+              </div>
+            </div>
+            <div class="tool-item" style="grid-column: 1/-1">
+              <div
+                class="tool-icon"
+                style="border-color: #6a1b9a; color: #6a1b9a"
+              >
+                🌐
+              </div>
+              <div>
+                <div class="tool-h">HTML / CSS / JavaScript (Single File)</div>
+                <div class="tool-p">
+                  Static HTML ฝัง data ใน JavaScript object ·
+                  เปิดได้ทันทีในเบราว์เซอร์ · ไม่ต้อง backend หรือ install
+                </div>
+                <span class="tbadge tb-o">OUTPUT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 04 DATA SOURCES ─── -->
+      <div class="win">
+        <div class="win-bar dark">
+          <div class="win-bar-title">🗄️ &nbsp;DATA SOURCES</div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <div class="src-list">
+            <div class="src-item">
+              <div class="src-n">1</div>
+              <div class="src-body">
+                <h4>🗺️ Google Maps (via Apify Scraper)</h4>
+                <p>
+                  ข้อมูลหลัก: ชื่อร้าน, rating, จำนวนรีวิว, ที่อยู่,
+                  เวลาเปิด-ปิด, พิกัด GPS · Query:
+                  <em>"restaurant thonglor group dining 8-12 pax"</em>
+                </p>
+                <a
+                  href="https://maps.google.com/?q=restaurant+thonglor+bangkok"
+                  target="_blank"
+                  rel="noopener"
+                  >https://maps.google.com → search: restaurant thonglor
+                  bangkok</a
+                >
+              </div>
+            </div>
+            <div class="src-item">
+              <div class="src-n">2</div>
+              <div class="src-body">
+                <h4>🍜 Wongnai (วงใน)</h4>
+                <p>
+                  ข้อมูลเสริม: รีวิวภาษาไทย, ราคาจากผู้ใช้จริง, เมนูแนะนำ,
+                  ข้อมูลจอง, จอดรถ — validate &amp; enrich ข้อมูล Google Maps
+                </p>
+                <a
+                  href="https://www.wongnai.com/restaurants/search?q=%E0%B8%97%E0%B8%AD%E0%B8%87%E0%B8%AB%E0%B8%A5%E0%B9%88%E0%B8%AD"
+                  target="_blank"
+                  rel="noopener"
+                  >https://www.wongnai.com → ทองหล่อ</a
+                >
+              </div>
+            </div>
+            <div class="src-item">
+              <div class="src-n">3</div>
+              <div class="src-body">
+                <h4>📋 Google Sheets (Enriched Dataset)</h4>
+                <p>
+                  หลัง Apify + Claude เสร็จ ข้อมูล merge ใน Sheets เป็น source
+                  of truth — 10 ร้าน × 18 fields ก่อนสร้าง HTML
+                </p>
+                <span style="font-size: 11px; color: #aaa"
+                  >Internal · Google Sheets · 10 rows × 18 cols</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 05 SCORING CRITERIA ─── -->
+      <div class="win">
+        <div class="win-bar">
+          <div class="win-bar-title">
+            📐 &nbsp;SCORING CRITERIA — WEIGHTED 6-DIM MODEL
+          </div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <table class="stbl">
+            <thead>
+              <tr>
+                <th style="width: 46px">#</th>
+                <th>มิติ</th>
+                <th style="width: 76px">คะแนน</th>
+                <th>วิธีคิดคะแนน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b style="color: var(--pink)">D1</b></td>
+                <td>⭐ Rating &amp; รีวิว</td>
+                <td class="spts">25 pts</td>
+                <td>
+                  ★ × 4 + log₁₀(reviews) × 2 → normalize 0–25<br /><small
+                    style="color: #aaa"
+                    >4.8★ + 3k reviews = 25 | 4.0★ + 100 reviews ≈ 12</small
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td><b style="color: var(--pink)">D2</b></td>
+                <td>👥 รองรับกลุ่ม 8–12</td>
+                <td class="spts">20 pts</td>
+                <td>
+                  ที่นั่ง ≥12: 20 | 8–11: 15 | ต้องจอง: −3 | private room: +3<br /><small
+                    style="color: #aaa"
+                    >ตรวจจาก Wongnai + Google reviews ที่กล่าวถึงกลุ่ม</small
+                  >
+                </td>
+              </tr>
+              <tr>
+                <td><b style="color: var(--pink)">D3</b></td>
+                <td>💰 ราคา/คน</td>
+                <td class="spts">15 pts</td>
+                <td>
+                  ≤฿200: 15 | ฿201–350: 13 | ฿351–500: 9 | ฿501–700: 5 |
+                  &gt;฿700: 2
+                </td>
+              </tr>
+              <tr>
+                <td><b style="color: var(--pink)">D4</b></td>
+                <td>🚇 ระยะ BTS ทองหล่อ</td>
+                <td class="spts">15 pts</td>
+                <td>
+                  &lt;200m: 15 | 200–500m: 13 | 500m–1km: 10 | 1–2km: 7 |
+                  &gt;2km: 4
+                </td>
+              </tr>
+              <tr>
+                <td><b style="color: var(--pink)">D5</b></td>
+                <td>🍱 ความหลากหลายเมนู</td>
+                <td class="spts">15 pts</td>
+                <td>
+                  Vegetarian +3 | Seafood +3 | Allergen +2 | &gt;30 เมนู +4 |
+                  หลายระดับราคา +3
+                </td>
+              </tr>
+              <tr>
+                <td><b style="color: var(--pink)">D6</b></td>
+                <td>✨ ประสบการณ์พิเศษ</td>
+                <td class="spts">10 pts</td>
+                <td>
+                  บรรยากาศ team dinner 0–5 | instagrammable 0–3 | แปลกใหม่ 0–2
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2">รวม</td>
+                <td>100 pts</td>
+                <td style="color: #aaa; font-size: 11px">
+                  ≥80 = แนะนำ · 65–79 = ดี · &lt;65 = รองลงมา
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- ─── 06 RESTAURANT DATASET / TOP 10 ─── -->
+      <div class="win">
+        <div class="win-bar dark">
+          <div class="win-bar-title">
+            🏆 &nbsp;RESTAURANT DATASET
+            <span
+              style="
+                background: var(--pink);
+                padding: 2px 8px;
+                font-size: 11px;
+                margin-left: 8px;
+              "
+              id="countBadge"
+              >10 / 10 ร้าน</span
+            >
+          </div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <!-- Filter bar -->
+          <div class="filter-bar">
+            <label>🔽 Filter:</label>
+            <select id="filterType" onchange="applyFilter()">
+              <option value="">ประเภทอาหาร: ทั้งหมด</option>
+              <option value="ไทย">ไทย</option>
+              <option value="Japanese">Japanese</option>
+              <option value="ยุโรป">ยุโรป</option>
+              <option value="ตลาดอาหาร">ตลาดอาหาร</option>
+            </select>
+            <select id="filterGroup" onchange="applyFilter()">
+              <option value="">กลุ่ม: ทั้งหมด</option>
+              <option value="ok">รองรับ 8–12 ✓</option>
+            </select>
+            <select id="filterPrice" onchange="applyFilter()">
+              <option value="">ราคา: ทั้งหมด</option>
+              <option value="low">≤฿350/คน</option>
+              <option value="mid">฿351–600/คน</option>
+            </select>
+            <span
+              id="filterReset"
+              style="
+                cursor: pointer;
+                color: var(--pink);
+                margin-left: auto;
+                font-size: 11px;
+              "
+              onclick="resetFilter()"
+              >✕ ล้าง filter</span
+            >
+          </div>
+
+          <div class="rank-wrap">
+            <table class="rtbl">
+              <thead>
+                <tr>
+                  <th style="width: 44px">#</th>
+                  <th class="left">ร้านอาหาร</th>
+                  <th>ราคา/คน</th>
+                  <th>Rating</th>
+                  <th>Score</th>
+                  <th>Confidence</th>
+                  <th>ประเภทอาหาร</th>
+                  <th>เวลาเปิด</th>
+                  <th>กลุ่ม</th>
+                </tr>
+              </thead>
+              <tbody id="rankBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 07 SCENARIO RECOMMENDATION ─── -->
+      <div class="win">
+        <div class="win-bar">
+          <div class="win-bar-title">
+            🎯 &nbsp;SCENARIO RECOMMENDATION — TOP 3
+          </div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <div class="scen-tabs">
+            <div
+              class="scen-btn active"
+              data-scen="safe"
+              onclick="switchScenario(this, 'safe')"
+            >
+              🛡️ ปลอดภัยสุด
+            </div>
+            <div
+              class="scen-btn"
+              data-scen="cheap"
+              onclick="switchScenario(this, 'cheap')"
+            >
+              💰 ประหยัด <span class="sd">ราคาต่อหัวน้อย</span>
+            </div>
+            <div
+              class="scen-btn"
+              data-scen="quick"
+              onclick="switchScenario(this, 'quick')"
+            >
+              ⚡ รีบกิน <span class="sd">บริการเร็ว ไม่เสียเวลา</span>
+            </div>
+            <div
+              class="scen-btn"
+              data-scen="biz"
+              onclick="switchScenario(this, 'biz')"
+            >
+              💼 คุยงานได้ <span class="sd">เงียบ + บรรยากาศเหมาะประชุม</span>
+            </div>
+            <div
+              class="scen-btn"
+              data-scen="team"
+              onclick="switchScenario(this, 'team')"
+            >
+              👥 ทีม 8–12 คน <span class="sd">โต๊ะใหญ่ รองรับกลุ่ม</span>
+            </div>
+          </div>
+          <div class="top3-grid" id="top3Grid"></div>
+        </div>
+      </div>
+
+      <!-- ─── AI ASK BOX ─── -->
+      <div class="win">
+        <div class="win-bar" style="background: #1a1a2e">
+          <div class="win-bar-title" style="color: #fff">
+            🤖 &nbsp;AI ASK BOX
+            <span
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                background: #2196f3;
+                border: 1.5px solid #0d47a1;
+                color: #fff;
+                font-size: 9px;
+                padding: 2px 7px;
+                margin-left: 8px;
+                letter-spacing: 1px;
+              "
+              >✦ GROUNDED</span
+            >
+          </div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body" style="padding: 0">
+          <div
+            id="chatMessages"
+            style="
+              height: 280px;
+              overflow-y: auto;
+              padding: 16px;
+              background: #f8fafc;
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+            "
+          >
+            <div
+              id="chatEmpty"
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                gap: 10px;
+                text-align: center;
+              "
+            >
+              <div
+                style="
+                  width: 48px;
+                  height: 48px;
+                  background: #dbeafe;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 24px;
+                "
+              >
+                🤖
+              </div>
+              <p style="color: #64748b; font-size: 13px">
+                ถามได้เลย! AI จะตอบโดยอ้างอิงจาก dataset พื้นที่
+                <span
+                  id="chatAreaLabel"
+                  style="font-weight: 700; color: #e91e8c"
+                  >ทองหล่อ</span
+                >
+                เท่านั้น
+              </p>
+              <div
+                style="
+                  display: flex;
+                  flex-wrap: wrap;
+                  gap: 8px;
+                  justify-content: center;
+                "
+                id="chatSuggestions"
+              >
+                <button
+                  onclick="sendChat(this.textContent)"
+                  style="
+                    font-size: 11px;
+                    padding: 6px 12px;
+                    border-radius: 20px;
+                    background: #fff;
+                    border: 1px solid #cbd5e1;
+                    color: #475569;
+                    cursor: pointer;
+                  "
+                >
+                  ร้านญี่ปุ่นราคาไม่เกิน 300 รองรับ 10 คนได้ไหม?
+                </button>
+                <button
+                  onclick="sendChat(this.textContent)"
+                  style="
+                    font-size: 11px;
+                    padding: 6px 12px;
+                    border-radius: 20px;
+                    background: #fff;
+                    border: 1px solid #cbd5e1;
+                    color: #475569;
+                    cursor: pointer;
+                  "
+                >
+                  ทีม 12 คน งบ 200/คน อยากนั่งคุยงาน ที่ไหนดี?
+                </button>
+                <button
+                  onclick="sendChat(this.textContent)"
+                  style="
+                    font-size: 11px;
+                    padding: 6px 12px;
+                    border-radius: 20px;
+                    background: #fff;
+                    border: 1px solid #cbd5e1;
+                    color: #475569;
+                    cursor: pointer;
+                  "
+                >
+                  ร้านไหน rating ดีที่สุดในย่านนี้?
+                </button>
+                <button
+                  onclick="sendChat(this.textContent)"
+                  style="
+                    font-size: 11px;
+                    padding: 6px 12px;
+                    border-radius: 20px;
+                    background: #fff;
+                    border: 1px solid #cbd5e1;
+                    color: #475569;
+                    cursor: pointer;
+                  "
+                >
+                  อยากกินเร็ว งบแค่ 150 มีไรบ้าง?
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              border-top: 2px solid #222;
+              padding: 10px 14px;
+              display: flex;
+              gap: 8px;
+              background: #fff;
+            "
+          >
+            <input
+              id="chatInput"
+              type="text"
+              placeholder='ถามเกี่ยวกับร้านในย่านนี้... เช่น "6 คน งบ 250 คุยงานได้"'
+              style="
+                flex: 1;
+                border: 2px solid #ccc;
+                padding: 8px 12px;
+                font-family: var(--font);
+                font-size: 12px;
+                outline: none;
+              "
+              onkeydown="if (event.key === 'Enter') sendChat();"
+            />
+            <button
+              onclick="sendChat()"
+              style="
+                background: var(--pink);
+                color: #fff;
+                border: 2px solid #222;
+                padding: 8px 16px;
+                font-family: var(--font);
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                letter-spacing: 1px;
+              "
+            >
+              ✈ ถาม
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 08 COMPARISON ─── -->
+      <div class="win">
+        <div class="win-bar dark">
+          <div class="win-bar-title">
+            ⚖️ &nbsp;RESTAURANT COMPARISON — TOP 3
+          </div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <div class="cmp-grid" id="cmpGrid"></div>
+          <div style="margin-top: 14px; border: 2px solid var(--border)">
+            <div
+              style="
+                background: #1a1a2e;
+                color: #fff;
+                padding: 7px 11px;
+                font-size: 10px;
+                letter-spacing: 2px;
+                font-weight: 700;
+              "
+            >
+              QUICK COMPARISON TABLE
+            </div>
+            <div class="rank-wrap">
+              <table class="rtbl" style="min-width: 480px">
+                <thead>
+                  <tr>
+                    <th class="left">เกณฑ์</th>
+                    <th>🥇 #1</th>
+                    <th>🥈 #2</th>
+                    <th>🥉 #3</th>
+                  </tr>
+                </thead>
+                <tbody id="cmpTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 09 PROMPT EVIDENCE ─── -->
+      <div class="win">
+        <div class="win-bar dark">
+          <div class="win-bar-title">📝 &nbsp;AI PROMPT EVIDENCE</div>
+          <div class="wc-row">
+            <div class="wc">−</div>
+            <div class="wc">□</div>
+            <div class="wc">×</div>
+          </div>
+        </div>
+        <div class="win-body">
+          <div class="prompt-block">
+            <div class="prompt-bar">
+              <span class="pb-u">▶ USER → CLAUDE</span>
+              <span class="pb-meta">PROMPT #1 · DATA CLEANING</span>
+            </div>
+            <div class="prompt-body">
+              คุณคือผู้ช่วยวิเคราะห์ข้อมูลร้านอาหาร ฉันมีข้อมูลดิบจาก Apify
+              Google Maps Scraper:
+
+              <em>{{restaurant_json_array}}</em>
+
+              กรุณาทำสิ่งต่อไปนี้: 1. ลบร้านที่ไม่ใช่ "restaurant" (เช่น
+              mini-mart, spa, hotel) 2. ปรับรูปแบบราคาให้เป็น "฿XXX" ต่อคน
+              (ประมาณการถ้าไม่มี) 3. ตรวจสอบว่าร้านเปิดช่วงเย็น (17:00–21:00) 4.
+              เพิ่ม field: suitable_for_group_8_to_12 (true/false) 5. Return
+              เป็น JSON array ที่ clean แล้ว · ตอบเป็น JSON เท่านั้น
+            </div>
+          </div>
+
+          <div class="prompt-block">
+            <div class="prompt-bar">
+              <span class="pb-u">▶ USER → CLAUDE</span>
+              <span class="pb-meta">PROMPT #2 · SCORING PER RESTAURANT</span>
+            </div>
+            <div class="prompt-body">
+              ให้คะแนนร้าน "<em>{{restaurant_name}}</em>" สำหรับกลุ่มทีม 8–12 คน
+              มื้อเย็น ย่านทองหล่อ ข้อมูล: Rating <em>{{rating}}</em>★ (<em
+                >{{reviews}}</em
+              >
+              รีวิว) · ราคา <em>{{price}}</em>/คน · BTS <em>{{bts_dist}}</em>m
+              ให้คะแนน: D1 Rating (0–25) · D2 Group (0–20) · D3 Price (0–15) D4
+              Travel (0–15) · D5 Menu (0–15) · D6 Experience (0–10) พร้อม pros[]
+              3 ข้อ · cons[] 2 ข้อ Return JSON:
+              {d1,d2,d3,d4,d5,d6,total,pros[],cons[]}
+            </div>
+          </div>
+
+          <div class="prompt-block">
+            <div class="prompt-bar">
+              <span class="pb-u">▶ USER → CLAUDE</span>
+              <span class="pb-meta">PROMPT #3 · TOP 3 RECOMMENDATION</span>
+            </div>
+            <div class="prompt-body">
+              จาก 10 ร้านที่ผ่านการ score แล้ว:
+              <em>{{scored_restaurants_json}}</em>
+
+              แนะนำ Top 3 สำหรับทีม 8–12 คน มื้อเย็น ทองหล่อ อธิบาย: ทำไมเลือก?
+              เหมาะกับทีมอย่างไร? ข้อควรระวัง? Format JSON:
+              [{rank,name,reason,warning}]
+            </div>
+          </div>
+
+          <div class="prompt-block">
+            <div class="prompt-bar">
+              <span class="pb-a">◀ CLAUDE → RESPONSE</span>
+              <span class="pb-meta">RESPONSE #3 · TOP RECOMMENDATION</span>
+            </div>
+            <div class="prompt-body">
+              <span class="resp"
+                >{"rank":1,"name":"The Commons Thonglor","score":88,
+                "reason":"เป็น multi-concept food market
+                ที่มีร้านอาหารหลายร้านในที่เดียว
+                ทีมสามารถแยกกินต่างร้านได้ตามใจชอบ แต่ยังนั่งโต๊ะด้วยกันได้
+                พื้นที่กว้าง รองรับกลุ่มใหญ่โดยไม่ต้องจองล่วงหน้า ราคาเฉลี่ย
+                ฿200–300/คน เหมาะกับงบทีม", "warning":"ที่นั่งกลางแจ้ง
+                อาจร้อนช่วงต้นเย็น ควรให้คนหนึ่งไป hold โต๊ะก่อน"}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /wrap -->
+
+    <footer>
+      HW03 · AI FOOD DECISION REPORT · ทองหล่อ · 5 มิถุนายน 2568 &nbsp;|&nbsp;
+      <span>APIFY</span> · <span>GOOGLE SHEETS</span> ·
+      <span>CLAUDE SONNET 4.6</span> · <span>N8N</span> ·
+      <span>HTML/CSS/JS</span>
+    </footer>
+
+    <script>
+      // ─── DATA ─────────────────────────────────────────────────────────────────────
+      const APPS_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbziViDkm7et6i1KHGEeXvRTItUghJrfUNi3xrMIedXs1gu5M2D4ySRF_J0Y9E-29mZ0/exec";
+
+      let DATA_THONGLOR = [];
+      let DATA_ASOK = [];
+      let DATA_SIAM = [];
+      let DATA_ARI = [];
+      let DATA_PROMPONG = [];
+
+      function _initData(d) {
+        d.sort((a, b) => b.total - a.total);
+        d.forEach((r, i) => (r.rank = i + 1));
+      }
+      let DATA = DATA_THONGLOR;
+
+      // ─── HELPERS ──────────────────────────────────────────────────────────────────
+      function sbClass(s) {
+        return s >= 80 ? "sb-hi" : s >= 70 ? "sb-mid" : "sb-lo";
+      }
+      function priceClass(p) {
+        return p === "low" ? "p-lo" : p === "mid" ? "p-mid" : "p-hi";
+      }
+
+      // ─── RENDER RANK TABLE ────────────────────────────────────────────────────────
+      let filteredData = [...DATA];
+
+      function renderRankTable() {
+        const tbody = document.getElementById("rankBody");
+        document.getElementById("countBadge").textContent =
+          `${filteredData.length} / ${DATA.length} ร้าน`;
+        tbody.innerHTML = filteredData
+          .map((r) => {
+            const rb =
+              r.rank <= 3
+                ? `<span class="rbadge rb${r.rank}">${r.rank}</span>`
+                : `<span class="rbadge rbn">${r.rank}</span>`;
+            const gok = r.group_ok
+              ? '<span style="color:var(--green2);font-weight:700;">✓</span>'
+              : '<span style="color:#F44336;font-weight:700;">✕</span>';
+            return `<tr>
+      <td>${rb}</td>
+      <td class="left"><strong>${r.name}</strong><br><span class="dim">${r.address}</span></td>
+      <td><span class="ptag ${priceClass(r.pl)}">${r.priceLabel}</span></td>
+      <td><span class="rstar">★</span>${r.rating} <span class="dim">(${r.reviews.toLocaleString()})</span></td>
+      <td><span class="sbadge ${sbClass(r.total)}">${r.total}</span></td>
+      <td><div class="conf-bar"><div class="conf-fill" style="width:100%"></div></div> <span class="dim" style="font-size:11px;">100%</span></td>
+      <td style="font-size:11px;">${r.type}</td>
+      <td style="font-size:11px;">${r.hours}</td>
+      <td>${gok} <span class="dim">≤${r.gmax}</span></td>
+    </tr>`;
+          })
+          .join("");
+      }
+
+      function updateDatasetStats() {
+        const n = DATA.length;
+        const avgPrice = n
+          ? Math.round(DATA.reduce((s, r) => s + r.price, 0) / n)
+          : 0;
+        const avgScore = n
+          ? Math.round((DATA.reduce((s, r) => s + r.total, 0) / n) * 10) / 10
+          : 0;
+        const grpOk = DATA.filter((r) => r.group_ok).length;
+        const el = (id) => document.getElementById(id);
+        if (el("statRestaurants")) el("statRestaurants").textContent = n;
+        if (el("statAvgPrice")) el("statAvgPrice").textContent = "฿" + avgPrice;
+        if (el("statFitScore")) el("statFitScore").textContent = avgScore;
+        if (el("statGroupOk")) el("statGroupOk").textContent = grpOk;
+      }
+
+      function applyFilter() {
+        const ft = document.getElementById("filterType").value;
+        const fg = document.getElementById("filterGroup").value;
+        const fp = document.getElementById("filterPrice").value;
+        filteredData = DATA.filter((r) => {
+          if (ft && !r.type.includes(ft)) return false;
+          if (fg === "ok" && !r.group_ok) return false;
+          if (fp === "low" && r.price > 350) return false;
+          if (fp === "mid" && (r.price <= 350 || r.price > 600)) return false;
+          return true;
+        });
+        renderRankTable();
+      }
+      function resetFilter() {
+        document.getElementById("filterType").value = "";
+        document.getElementById("filterGroup").value = "";
+        document.getElementById("filterPrice").value = "";
+        filteredData = [...DATA];
+        renderRankTable();
+      }
+
+      // ─── TOP 3 ────────────────────────────────────────────────────────────────────
+      let currentScenario = "safe";
+      const scenarioColors = {
+        safe: ["#e91e8c", "#9e9e9e", "#cd7f32"],
+        cheap: ["#ff9800", "#9e9e9e", "#cd7f32"],
+        quick: ["#f9a825", "#9e9e9e", "#cd7f32"],
+        biz: ["#00897b", "#9e9e9e", "#cd7f32"],
+        team: ["#7b1fa2", "#9e9e9e", "#cd7f32"],
+      };
+      const scenarioLabels = {
+        safe: "ปลอดภัยสุด",
+        cheap: "ประหยัด",
+        quick: "รีบกิน",
+        biz: "คุยงานได้",
+        team: "ทีม 8–12 คน",
+      };
+
+      function getScenarioData(scen) {
+        const d = [...DATA];
+        if (scen === "safe") {
+          return d.sort((a, b) => b.total - a.total).slice(0, 3);
+        } else if (scen === "cheap") {
+          return d.sort((a, b) => a.price - b.price).slice(0, 3);
+        } else if (scen === "quick") {
+          return d.sort((a, b) => b.rating - a.rating).slice(0, 3);
+        } else if (scen === "biz") {
+          // high score + business-like type
+          return d.sort((a, b) => b.total - a.total).slice(0, 3);
+        } else if (scen === "team") {
+          return d
+            .filter((r) => r.group_ok)
+            .sort((a, b) => b.gmax - a.gmax || b.total - a.total)
+            .slice(0, 3);
+        }
+        return d.slice(0, 3);
+      }
+
+      function switchScenario(el, scen) {
+        document
+          .querySelectorAll(".scen-btn")
+          .forEach((b) => b.classList.remove("active"));
+        el.classList.add("active");
+        currentScenario = scen;
+        renderTop3();
+        renderCompare();
+      }
+
+      function renderTop3() {
+        const scen = currentScenario;
+        const scenData = getScenarioData(scen);
+        const label = scenarioLabels[scen] || scen;
+        const colors = scenarioColors[scen] || scenarioColors.safe;
+        document.getElementById("top3Grid").innerHTML = scenData
+          .map(
+            (r, i) => `<div class="t3c">
+    <div class="t3c-head" style="background:${colors[i]}">
+      <div class="t3c-hl">#${i + 1} ${label}</div>
+      <div class="t3c-hr"><span class="star-y">★</span>${r.rating}</div>
+    </div>
+    <div class="t3c-body">
+      <div class="t3c-name">${r.name}</div>
+      <div class="t3c-tags">
+        <span class="t3c-tag">${r.type}</span>
+        <span class="t3c-tag price">${r.priceLabel}/คน</span>
+      </div>
+      <div class="scen-lbl">SCENARIO SCORE</div>
+      <div class="t3-sbar-row">
+        <div class="t3-sbar"><div class="t3-sbar-f" style="width:${r.total}%"></div></div>
+        <span class="t3-score">${r.total}</span>
+      </div>
+      <div class="t3-checks">
+        ${r.pros.map((p) => `<div class="t3-check"><span class="t3-check-ico">✓</span>${p}</div>`).join("")}
+      </div>
+      <div class="t3c-foot">
+        📍 ${r.address} &nbsp;|&nbsp; 🚇 ${r.bts}m จาก BTS<br>
+        🕐 ${r.hours}<br>
+        <a href="${r.gmap}" target="_blank" rel="noopener">📘 ดูบน Google Maps →</a>
+      </div>
+    </div>
+  </div>`,
+          )
+          .join("");
+      }
+
+      // ─── COMPARE ─────────────────────────────────────────────────────────────────
+      function renderCompare() {
+        const medals = ["🥇", "🥈", "🥉"];
+        document.getElementById("cmpGrid").innerHTML = DATA.slice(0, 3)
+          .map(
+            (r, i) => `<div class="cmp-card">
+    <div class="cmp-head">${medals[i]} ${r.name}</div>
+    <div class="cmp-sec pros"><h4>✅ ข้อดี</h4>${r.pros.map((p) => `<div class="cmp-item">${p}</div>`).join("")}</div>
+    <div class="cmp-divider"></div>
+    <div class="cmp-sec cons"><h4>⚠️ ข้อเสีย</h4>${r.cons.map((c) => `<div class="cmp-item">${c}</div>`).join("")}</div>
+    <div class="cmp-note"><strong>สรุป:</strong> ${r.ideal}</div>
+  </div>`,
+          )
+          .join("");
+
+        const rows = [
+          ["ประเภทอาหาร", (r) => r.type],
+          ["ราคา/คน", (r) => r.priceLabel],
+          ["Rating", (r) => `★${r.rating} (${r.reviews.toLocaleString()})`],
+          ["BTS ทองหล่อ", (r) => `${r.bts}m`],
+          ["รองรับกลุ่มสูงสุด", (r) => `${r.gmax} คน`],
+          [
+            "คะแนนรวม",
+            (r) => `<strong style="color:var(--green)">${r.total}/100</strong>`,
+          ],
+          ["เวลาเปิด", (r) => r.hours],
+        ];
+        const top3 = DATA.slice(0, 3);
+        document.getElementById("cmpTableBody").innerHTML = rows
+          .map(
+            ([l, fn]) =>
+              `<tr><td class="left" style="background:#F8F8F8;font-size:12px;padding:8px 10px;">${l}</td>
+    ${top3.map((r) => `<td style="font-size:12px;">${fn(r)}</td>`).join("")}</tr>`,
+          )
+          .join("");
+      }
+
+      // ─── AI ASK BOX (GROUNDED) ───────────────────────────────────────────────────
+      function sendChat(preset) {
+        const input = document.getElementById("chatInput");
+        const q = (preset || input.value).trim();
+        if (!q) return;
+        input.value = "";
+
+        const msgs = document.getElementById("chatMessages");
+        const empty = document.getElementById("chatEmpty");
+        if (empty) {
+          empty.style.display = "none";
+        }
+
+        // Append user bubble
+        const userBubble = document.createElement("div");
+        userBubble.style.cssText =
+          "align-self:flex-end;background:var(--pink);color:#fff;padding:8px 12px;max-width:80%;font-size:12px;border-radius:2px;border:2px solid #222;";
+        userBubble.textContent = q;
+        msgs.appendChild(userBubble);
+
+        // Loading
+        const loadBubble = document.createElement("div");
+        loadBubble.style.cssText =
+          "align-self:flex-start;background:#fff;border:2px solid #222;padding:8px 12px;max-width:80%;font-size:12px;color:#888;";
+        loadBubble.textContent = "กำลังค้นหาในข้อมูลย่านนี้...";
+        msgs.appendChild(loadBubble);
+        msgs.scrollTop = msgs.scrollHeight;
+
+        // Grounded answer from DATA
+        setTimeout(() => {
+          const answer = groundedAnswer(q, DATA);
+          loadBubble.style.color = "#222";
+          loadBubble.innerHTML = answer;
+          msgs.scrollTop = msgs.scrollHeight;
+        }, 600);
+      }
+
+      function groundedAnswer(q, data) {
+        if (!data || data.length === 0) return "ยังไม่มีข้อมูลในย่านนี้";
+        const lower = q.toLowerCase();
+
+        // Price filter
+        const priceMatch = q.match(/(\d+)/g);
+        const maxPrice = priceMatch
+          ? Math.max(
+              ...priceMatch.map(Number).filter((n) => n > 50 && n < 5000),
+            )
+          : null;
+
+        // Keywords
+        const wantCheap = /ถูก|ประหยัด|น้อย/i.test(q);
+        const wantGroup = /กลุ่ม|ทีม|หลายคน|คน/i.test(q);
+        const wantMeeting = /ประชุม|คุยงาน|เงียบ/i.test(q);
+        const wantRating = /rating|คะแนน|ดีที่สุด|ที่ไหนดี/i.test(q);
+
+        let candidates = [...data];
+
+        if (maxPrice && maxPrice < 1000)
+          candidates = candidates.filter((r) => r.price <= maxPrice);
+        if (wantGroup) candidates = candidates.filter((r) => r.group_ok);
+        if (wantCheap)
+          candidates = candidates.sort((a, b) => a.price - b.price);
+        else if (wantRating)
+          candidates = candidates.sort((a, b) => b.rating - a.rating);
+        else candidates = candidates.sort((a, b) => b.total - a.total);
+
+        const top = candidates.slice(0, 3);
+        if (top.length === 0)
+          return `ไม่พบร้านที่ตรงกับเงื่อนไขในย่านนี้ (งบ ≤฿${maxPrice || "?"}/คน)`;
+
+        const lines = top
+          .map(
+            (r, i) =>
+              `<div style="padding:4px 0;border-bottom:1px solid #f0f0f0;">
+            <strong>${i + 1}. ${r.name}</strong> — <span style="color:var(--pink)">฿${r.price}/คน</span> · ★${r.rating} (${r.reviews.toLocaleString()} รีวิว)<br>
+            <span style="font-size:11px;color:#666;">${r.type} · ${r.hours} · ${r.group_ok ? "✓ รองรับกลุ่ม" : "⚠️ กลุ่มใหญ่ควรจอง"}</span>
+          </div>`,
+          )
+          .join("");
+        return `<div style="font-size:11px;color:#888;margin-bottom:6px;">ผลจากข้อมูลจริงในย่านนี้ (${data.length} ร้าน):</div>${lines}`;
+      }
+
+      // ─── AREA SWITCHING ─────────────────────────────────────────────────────────
+      function switchArea(el, areaKey) {
+        document
+          .querySelectorAll(".area-btn")
+          .forEach((b) => b.classList.remove("active"));
+        el.classList.add("active");
+        const areaMap = {
+          thonglor: DATA_THONGLOR,
+          asok: DATA_ASOK,
+          siam: DATA_SIAM,
+          ari: DATA_ARI,
+          prompong: DATA_PROMPONG,
+        };
+        DATA = areaMap[areaKey] || DATA_THONGLOR;
+        filteredData = [...DATA];
+        const mainContent = document.querySelector(".wrap");
+        const notice = document.getElementById("areaNotice");
+        const areaCount = document.getElementById("areaCount");
+        if (DATA.length > 0) {
+          mainContent.style.display = "";
+          notice.style.display = "none";
+          areaCount.textContent = `${DATA.length} ร้าน`;
+          updateDatasetStats();
+          // update chat area label
+          const areaNameMap = {
+            thonglor: "ทองหล่อ",
+            asok: "อโศก",
+            siam: "สยาม",
+            ari: "อารีย์",
+            prompong: "พร้อมพงษ์",
+          };
+          const lbl = document.getElementById("chatAreaLabel");
+          if (lbl) lbl.textContent = areaNameMap[areaKey] || areaKey;
+          // reset chat
+          const chatMsgs = document.getElementById("chatMessages");
+          const chatEmpty = document.getElementById("chatEmpty");
+          if (chatMsgs && chatEmpty) {
+            chatMsgs.innerHTML = "";
+            chatMsgs.appendChild(chatEmpty);
+            chatEmpty.style.display = "flex";
+          }
+          renderRankTable();
+          currentScenario = "safe";
+          document
+            .querySelectorAll(".scen-btn")
+            .forEach((b) => b.classList.remove("active"));
+          const safeBtn = document.querySelector(".scen-btn[data-scen='safe']");
+          if (safeBtn) safeBtn.classList.add("active");
+          renderTop3();
+          renderCompare();
+        } else {
+          mainContent.style.display = "none";
+          notice.style.display = "";
+          areaCount.textContent = "0 ร้าน";
+          const names = {
+            asok: "อโศก Terminal 21",
+            siam: "สยาม Siam Paragon",
+            ari: "อารีย์ Ari BTS",
+            prompong: "พร้อมพงษ์ Prompong",
+          };
+          document.getElementById("noticeTitle").textContent =
+            `ยังไม่มีข้อมูลพื้นที่: ${names[areaKey] || areaKey}`;
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+      function switchToThonglor() {
+        const thonglorBtn = document.querySelectorAll(".area-btn")[3];
+        switchArea(thonglorBtn, "thonglor");
+      }
+
+      // ─── APIFY SCRAPER ───────────────────────────────────────────────────────────
+      const APIFY_ACTOR_ID = "nwua9Gu5YrADL7ZDj";
+      const APIFY_API_BASE = "https://api.apify.com/v2";
+      const AREAS_CONFIG = {
+        thonglor: {
+          search: "restaurant thonglor bangkok group dining",
+          bts_lat: 13.7295,
+          bts_lng: 100.5840,
+          label: "ทองหล่อ",
+        },
+        asok: {
+          search: "restaurant asok terminal21 bangkok group dining",
+          bts_lat: 13.7368,
+          bts_lng: 100.5607,
+          label: "อโศก",
+        },
+        siam: {
+          search: "restaurant siam square bangkok group dining",
+          bts_lat: 13.7463,
+          bts_lng: 100.5342,
+          label: "สยาม",
+        },
+        ari: {
+          search: "restaurant ari bts bangkok group dining",
+          bts_lat: 13.7764,
+          bts_lng: 100.5397,
+          label: "อารีย์",
+        },
+        prompong: {
+          search: "restaurant phrom phong emquartier bangkok group dining",
+          bts_lat: 13.7294,
+          bts_lng: 100.5694,
+          label: "พร้อมพงษ์",
+        },
+      };
+
+      function _priceEstimate(item) {
+        const p = item.price || "";
+        const mapping = {
+          "฿": 150,
+          "฿฿": 300,
+          "฿฿฿": 600,
+          "฿฿฿฿": 1000,
+          $: 150,
+          $$: 300,
+          $$$: 600,
+          $$$$: 1000,
+        };
+        return mapping[p.trim()] || 300;
+      }
+
+      function _btsDistance(lat, lng, btsLat, btsLng) {
+        if (!lat || !lng) return 800;
+        const R = 6371000;
+        const φ1 = (btsLat * Math.PI) / 180;
+        const λ1 = (btsLng * Math.PI) / 180;
+        const φ2 = (lat * Math.PI) / 180;
+        const λ2 = (lng * Math.PI) / 180;
+        const dφ = φ2 - φ1;
+        const dλ = λ2 - λ1;
+        const a =
+          Math.sin(dφ / 2) ** 2 +
+          Math.cos(φ1) * Math.cos(φ2) * Math.sin(dλ / 2) ** 2;
+        return Math.round(R * 2 * Math.asin(Math.sqrt(a)));
+      }
+
+      function _scoreItem(item, btsLat, btsLng) {
+        const r = parseFloat(item.totalScore || 4.0) || 4.0;
+        const rev = parseInt(item.reviewsCount || 50) || 50;
+        const p = _priceEstimate(item);
+        const d = _btsDistance(
+          item.location?.lat || item.lat,
+          item.location?.lng || item.lng,
+          btsLat,
+          btsLng
+        );
+
+        const d1 = Math.min(25, Math.round(r * 4 + Math.log10(Math.max(rev, 1)) * 2));
+        const d2 = rev > 500 ? 18 : 14;
+        const d3 = p <= 200 ? 15 : p <= 350 ? 13 : p <= 500 ? 9 : p <= 700 ? 5 : 2;
+        const d4 = d < 200 ? 15 : d < 500 ? 13 : d < 1000 ? 10 : d < 2000 ? 7 : 4;
+        const d5 = 12;
+        const d6 = 8;
+
+        return {
+          d1: Math.round(d1),
+          d2,
+          d3,
+          d4,
+          d5,
+          d6,
+          total: Math.round(d1) + d2 + d3 + d4 + d5 + d6,
+        };
+      }
+
+      function showScrapeModal() {
+        const modal = document.getElementById("scrapeModal");
+        const token = localStorage.getItem("apifyToken");
+        if (token) {
+          document.getElementById("apifyToken").value = token;
+        }
+        document.getElementById("scrapeLog").style.display = "none";
+        document.getElementById("scrapeLog").innerHTML = "";
+        document.getElementById("scrapeStartBtn").disabled = false;
+        document.getElementById("scrapeCancelBtn").disabled = false;
+        document.getElementById("scrapeStartBtn").textContent = "▶ เริ่ม Scrape";
+        modal.style.display = "flex";
+      }
+
+      function closeScrapeModal() {
+        document.getElementById("scrapeModal").style.display = "none";
+      }
+
+      function _logScrape(msg) {
+        const log = document.getElementById("scrapeLog");
+        log.innerHTML += msg + "<br>";
+        log.scrollTop = log.scrollHeight;
+      }
+
+      async function startApifyScrape() {
+        try {
+          const token = document.getElementById("apifyToken").value.trim();
+          if (!token) {
+            alert("โปรดใส่ Apify Token");
+            return;
+          }
+
+          localStorage.setItem("apifyToken", token);
+          const log = document.getElementById("scrapeLog");
+          log.style.display = "block";
+          log.innerHTML = "";
+          document.getElementById("scrapeStartBtn").disabled = true;
+          document.getElementById("scrapeCancelBtn").disabled = true;
+
+          _logScrape("🚀 Starting scrape...");
+
+          const areas = ["thonglor", "asok", "siam", "ari", "prompong"];
+          for (let i = 0; i < areas.length; i++) {
+            const key = areas[i];
+            _logScrape(`📍 ${AREAS_CONFIG[key].label}...`);
+            await _runApify(token, key);
+          }
+
+          _logScrape("✅ Scrape ทุกพื้นที่เสร็จแล้ว!");
+          document.getElementById("scrapeStartBtn").textContent = "✅ เสร็จแล้ว";
+          setTimeout(() => {
+            closeScrapeModal();
+          }, 1500);
+        } catch (err) {
+          _logScrape(`❌ Error: ${err.message}`);
+          document.getElementById("scrapeStartBtn").disabled = false;
+          document.getElementById("scrapeCancelBtn").disabled = false;
+        }
+      }
+
+      async function _runApify(token, areaKey) {
+        const area = AREAS_CONFIG[areaKey];
+        const searchStr = area.search;
+
+        _logScrape(`🕷️ Requesting Apify run...`);
+
+        const runRes = await fetch(
+          `${APIFY_API_BASE}/acts/${APIFY_ACTOR_ID}/runs?token=${token}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              searchStringsArray: [searchStr],
+              maxCrawledPlacesPerSearch: 20,
+              language: "th",
+              countryCode: "th",
+              includeHistogram: false,
+              includeOpeningHours: true,
+              includePeopleAlsoSearch: false,
+              maxImages: 0,
+              maxReviews: 0,
+            }),
+          }
+        );
+        if (!runRes.ok) throw new Error(`Run creation failed: ${runRes.status}`);
+
+        const runData = await runRes.json();
+        const runId = runData.data.id;
+        _logScrape(`Run ID: ${runId}`);
+
+        let status = "";
+        for (let i = 0; i < 60; i++) {
+          await new Promise((r) => setTimeout(r, 5000));
+          const statusRes = await fetch(
+            `${APIFY_API_BASE}/actor-runs/${runId}?token=${token}`
+          );
+          if (!statusRes.ok) throw new Error(`Failed to fetch status: ${statusRes.status}`);
+          const statusData = await statusRes.json();
+          status = statusData.data.status;
+
+          if (status === "SUCCEEDED") break;
+          if (["FAILED", "ABORTED", "TIMED-OUT"].includes(status)) {
+            throw new Error(`Run ${status}`);
+          }
+          _logScrape(`⏳ Waiting... (${(i + 1) * 5}s)`);
+        }
+
+        if (status !== "SUCCEEDED") throw new Error("Run timeout");
+        _logScrape(`📦 Fetching results...`);
+
+        const statusRes2 = await fetch(
+          `${APIFY_API_BASE}/actor-runs/${runId}?token=${token}`
+        );
+        if (!statusRes2.ok) throw new Error(`Failed to fetch dataset ID: ${statusRes2.status}`);
+        const statusData2 = await statusRes2.json();
+        if (!statusData2.data || !statusData2.data.defaultDatasetId) {
+          throw new Error("No dataset ID in response: " + JSON.stringify(statusData2));
+        }
+        const dsId = statusData2.data.defaultDatasetId;
+
+        const itemsRes = await fetch(
+          `${APIFY_API_BASE}/datasets/${dsId}/items?limit=50&token=${token}`
+        );
+        if (!itemsRes.ok) throw new Error(`Failed to fetch items: ${itemsRes.status}`);
+        const itemsData = await itemsRes.json();
+        const items = Array.isArray(itemsData) ? itemsData : (itemsData.items || []);
+
+        const valid = [];
+        for (const item of items) {
+          const cats = (" " + (item.categories || []).join(" ") + " ").toLowerCase();
+          if (
+            ["hotel", "spa", "beauty", "salon", "shop", "market", "7-eleven"].some(
+              (x) => cats.includes(x)
+            )
+          ) {
+            continue;
+          }
+          if ((item.totalScore || 0) < 3.8) continue;
+
+          const score = _scoreItem(item, area.bts_lat, area.bts_lng);
+          const price = _priceEstimate(item);
+          const bts = _btsDistance(
+            item.location?.lat || item.lat,
+            item.location?.lng || item.lng,
+            area.bts_lat,
+            area.bts_lng
+          );
+
+          item._score = score;
+          item._price = price;
+          item._bts = bts;
+          valid.push(item);
+        }
+
+        valid.sort((a, b) => b._score.total - a._score.total);
+        const top = valid.slice(0, 10);
+        _logScrape(`🔢 Got ${top.length} restaurants`);
+
+        const areaVars = {
+          thonglor: DATA_THONGLOR,
+          asok: DATA_ASOK,
+          siam: DATA_SIAM,
+          ari: DATA_ARI,
+          prompong: DATA_PROMPONG,
+        };
+
+        const arr = areaVars[areaKey];
+        arr.length = 0;
+
+        for (const item of top) {
+          const sc = item._score;
+          const oh = item.openingHours || [];
+          const hours =
+            oh[0]?.hours ||
+            (typeof oh[0] === "string" ? oh[0] : "—");
+          const cats = item.categories || [];
+
+          arr.push({
+            name: String(item.title || ""),
+            type: String(cats[0] || "ร้านอาหาร"),
+            price: item._price,
+            priceLabel: `฿${item._price}`,
+            pl: item._price <= 350 ? "low" : item._price <= 600 ? "mid" : "high",
+            rating: parseFloat(item.totalScore || 4.0) || 4.0,
+            reviews: parseInt(item.reviewsCount || 0) || 0,
+            bts: item._bts,
+            group_ok: sc.d2 >= 15,
+            gmax: 20,
+            address: String(item.address || ""),
+            hours: String(hours),
+            gmap:
+              item.url ||
+              item.website ||
+              `https://maps.google.com/?q=${String(item.title || "").replace(
+                / /g,
+                "+"
+              )}+Bangkok`,
+            scores: {
+              d1: sc.d1,
+              d2: sc.d2,
+              d3: sc.d3,
+              d4: sc.d4,
+              d5: sc.d5,
+              d6: sc.d6,
+            },
+            total: sc.total,
+            pros: [
+              "ข้อมูลจาก Google Maps จริง",
+              `Rating ${item.totalScore || 4.0}★ (${parseInt(item.reviewsCount || 0).toLocaleString()} รีวิว)`,
+              `อยู่ในย่าน${area.label}`,
+            ],
+            cons: [
+              "โปรดตรวจสอบที่นั่งก่อนไป",
+              "อาจต้องจองล่วงหน้าสำหรับกลุ่มใหญ่",
+            ],
+            ideal: "ข้อมูลจริงจาก Google Maps",
+          });
+        }
+
+        _initData(arr);
+        DATA = arr;
+        filteredData = [...DATA];
+
+        updateDatasetStats();
+        const now = new Date();
+        const ts = now.toLocaleTimeString("th-TH", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+        const dateStr = now.toLocaleDateString("th-TH", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+        const liveTs = document.getElementById("liveTimestamp");
+        if (liveTs) liveTs.textContent = `· อัปเดต ${ts} · ${dateStr}`;
+        document.getElementById("areaCount").textContent = `${DATA.length} ร้าน`;
+        renderRankTable();
+        renderTop3();
+        renderCompare();
+      }
+
+      // ─── GOOGLE SHEETS LOADER ────────────────────────────────────────────────────
+      async function loadSheetData() {
+        const overlay = document.getElementById("loadingOverlay");
+        const status = document.getElementById("loadStatus");
+        try {
+          status.textContent = "กำลังดึงข้อมูลจาก Google Sheets...";
+          const res = await fetch(APPS_SCRIPT_URL);
+          const rows = await res.json();
+          if (!Array.isArray(rows))
+            throw new Error("Invalid response from Apps Script");
+          status.textContent = `โหลดได้ ${rows.length} รายการ — กำลังประมวลผล...`;
+
+          const areaVars = {
+            thonglor: DATA_THONGLOR,
+            asok: DATA_ASOK,
+            siam: DATA_SIAM,
+            ari: DATA_ARI,
+            prompong: DATA_PROMPONG,
+          };
+          Object.values(areaVars).forEach((a) => (a.length = 0));
+
+          for (const r of rows) {
+            const arr = areaVars[r.area];
+            if (!arr) continue;
+            arr.push({
+              name: String(r.name || ""),
+              type: String(r.type || "ร้านอาหาร"),
+              price: Number(r.price) || 300,
+              priceLabel: String(r.priceLabel || `฿${r.price}`),
+              pl: String(r.pl || "low"),
+              rating: Number(r.rating) || 4.0,
+              reviews: Number(r.reviews) || 0,
+              bts: Number(r.bts) || 500,
+              group_ok: r.group_ok === "true" || r.group_ok === true,
+              gmax: Number(r.gmax) || 20,
+              address: String(r.address || ""),
+              hours: String(r.hours || "—"),
+              gmap: String(r.gmap || ""),
+              scores: {
+                d1: Number(r.d1) || 0,
+                d2: Number(r.d2) || 0,
+                d3: Number(r.d3) || 0,
+                d4: Number(r.d4) || 0,
+                d5: Number(r.d5) || 0,
+                d6: Number(r.d6) || 0,
+              },
+              total: Number(r.total) || 0,
+              pros: (() => {
+                try {
+                  return JSON.parse(r.pros);
+                } catch {
+                  return [r.pros || ""];
+                }
+              })(),
+              cons: (() => {
+                try {
+                  return JSON.parse(r.cons);
+                } catch {
+                  return [r.cons || ""];
+                }
+              })(),
+              ideal: String(r.ideal || ""),
+            });
+          }
+
+          [
+            DATA_THONGLOR,
+            DATA_ASOK,
+            DATA_SIAM,
+            DATA_ARI,
+            DATA_PROMPONG,
+          ].forEach(_initData);
+          DATA = DATA_THONGLOR;
+          filteredData = [...DATA];
+
+          overlay.style.display = "none";
+          document.getElementById("areaCount").textContent =
+            `${DATA.length} ร้าน`;
+          updateDatasetStats();
+          // update live timestamp
+          const now = new Date();
+          const ts = now.toLocaleTimeString("th-TH", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+          const dateStr = now.toLocaleDateString("th-TH", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
+          const liveTs = document.getElementById("liveTimestamp");
+          if (liveTs) liveTs.textContent = `· อัปเดต ${ts} · ${dateStr}`;
+          renderRankTable();
+          renderTop3();
+          renderCompare();
+        } catch (err) {
+          overlay.innerHTML = `<div style="text-align:center;font-family:'JetBrains Mono',monospace;color:#fff;padding:32px">
+            <div style="font-size:2rem;margin-bottom:12px">❌</div>
+            <div style="font-size:14px;font-weight:700">โหลดข้อมูลไม่สำเร็จ</div>
+            <div style="font-size:11px;color:#faa;margin-top:8px">${err.message}</div>
+            <div style="font-size:10px;color:#888;margin-top:6px">ตรวจสอบว่า Sheet ถูก Share เป็น "Anyone with link can view"</div>
+          </div>`;
+        }
+      }
+
+      // ─── INIT ────────────────────────────────────────────────────────────────────
+      loadSheetData();
+    </script>
+  </body>
+</html>

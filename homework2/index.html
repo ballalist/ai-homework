@@ -1,0 +1,2088 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>เครื่องจำลองกาชา</title>
+    <style>
+      /* ══════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════ */
+      :root {
+        --bg: #fffde7;
+        --card: #ffffff;
+        --border: #e0e0e0;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --text: #212121;
+        --dim: #757575;
+        --primary: #1976d2;
+        --primary2: #1565c0;
+        --SSR: #ff9800;
+        --SR: #9c27b0;
+        --R: #2196f3;
+        --N: #757575;
+        --green: #4caf50;
+        --red: #f44336;
+        --orange: #ff9800;
+        --radius: 12px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      /* ── Header ── */
+      header {
+        background: linear-gradient(
+          135deg,
+          #1565c0 0%,
+          #1976d2 60%,
+          #42a5f5 100%
+        );
+        padding: 28px 20px 24px;
+        text-align: center;
+      }
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 12px;
+      }
+      header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 8px;
+        letter-spacing: -0.02em;
+      }
+      header p {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.75);
+        letter-spacing: 0.04em;
+      }
+
+      /* ── Layout ── */
+      .wrap {
+        max-width: 1060px;
+        margin: 0 auto;
+        padding: 22px 14px;
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 760px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Card ── */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: var(--shadow);
+      }
+      .card-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--dim);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* ── Inputs ── */
+      label {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--dim);
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+      input[type="number"],
+      input[type="text"],
+      select {
+        background: #f5f5f5;
+        border: 1.5px solid transparent;
+        border-radius: 8px;
+        color: var(--text);
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: border-color 0.2s;
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: #fff;
+      }
+      .field {
+        margin-bottom: 12px;
+      }
+      .input-big {
+        font-size: 1.6rem !important;
+        font-weight: 700 !important;
+        text-align: center !important;
+        padding: 14px !important;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        padding: 11px 22px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.18s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 2px 6px rgba(25, 118, 210, 0.35);
+      }
+      .btn-primary:hover {
+        background: var(--primary2);
+        transform: translateY(-1px);
+      }
+      .btn-primary:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-outline {
+        background: #fff;
+        color: var(--primary);
+        border: 1.5px solid var(--primary);
+      }
+      .btn-outline:hover {
+        background: #e3f2fd;
+      }
+      .btn-sm {
+        padding: 7px 14px;
+        font-size: 0.8rem;
+      }
+      .btn-danger {
+        background: transparent;
+        color: var(--red);
+        border: 1px solid #ffcdd2;
+        font-size: 0.8rem;
+        padding: 5px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-danger:hover {
+        background: #ffebee;
+      }
+      .btn-green {
+        background: #388e3c;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .btn-green:hover {
+        background: #2e7d32;
+      }
+
+      /* ── Preset strip ── */
+      .preset-strip {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      .preset-btn {
+        padding: 6px 16px;
+        border: 1.5px solid var(--primary);
+        border-radius: 20px;
+        background: #fff;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+        transition: all 0.15s;
+      }
+      .preset-btn:hover,
+      .preset-btn.active {
+        background: var(--primary);
+        color: #fff;
+      }
+
+      /* ── Rate total ── */
+      .rate-total {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+      .rate-total.ok {
+        background: #e8f5e9;
+        color: #388e3c;
+      }
+      .rate-total.err {
+        background: #ffebee;
+        color: var(--red);
+      }
+
+      /* ── Rate cards ── */
+      .rate-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      @media (max-width: 500px) {
+        .rate-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .rate-card {
+        border-radius: 10px;
+        padding: 14px 10px;
+        text-align: center;
+        border: 1.5px solid transparent;
+      }
+      .rate-card.SSR {
+        background: #fff3e0;
+        border-color: #ffb74d;
+      }
+      .rate-card.SR {
+        background: #f3e5f5;
+        border-color: #ce93d8;
+      }
+      .rate-card.R {
+        background: #e3f2fd;
+        border-color: #90caf9;
+      }
+      .rate-card.N {
+        background: #fafafa;
+        border-color: #bdbdbd;
+      }
+      .rarity-lbl {
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 10px;
+        padding: 2px 8px;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .lbl-SSR {
+        background: var(--SSR);
+        color: #fff;
+      }
+      .lbl-SR {
+        background: var(--SR);
+        color: #fff;
+      }
+      .lbl-R {
+        background: var(--R);
+        color: #fff;
+      }
+      .lbl-N {
+        background: var(--N);
+        color: #fff;
+      }
+      .rate-card input {
+        background: transparent;
+        border: none;
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-align: center;
+        width: 100%;
+        color: var(--text);
+        padding: 0;
+      }
+      .rate-card input:focus {
+        outline: none;
+      }
+      .rate-card .rate-unit {
+        font-size: 0.8rem;
+        color: var(--dim);
+        margin-top: 2px;
+      }
+
+      /* ── Toggle ── */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+      }
+      .toggle {
+        position: relative;
+        width: 42px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+      .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-sl {
+        position: absolute;
+        inset: 0;
+        background: #bdbdbd;
+        border-radius: 24px;
+        transition: 0.2s;
+      }
+      .toggle-sl:before {
+        content: "";
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        left: 3px;
+        top: 3px;
+        background: #fff;
+        border-radius: 50%;
+        transition: 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+      input:checked + .toggle-sl {
+        background: var(--primary);
+      }
+      input:checked + .toggle-sl:before {
+        transform: translateX(18px);
+      }
+      .toggle-info {
+        flex: 1;
+      }
+      .toggle-info strong {
+        font-size: 0.88rem;
+        color: var(--text);
+        display: block;
+      }
+      .toggle-info span {
+        font-size: 0.76rem;
+        color: var(--dim);
+      }
+      .toggle-sub {
+        display: none;
+        margin-top: 8px;
+        background: #eff6ff;
+        border-radius: 8px;
+        padding: 10px 12px;
+      }
+      .toggle-sub.show {
+        display: block;
+      }
+      .toggle-sub-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      /* ── Item pool table ── */
+      .pool-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+      }
+      .pool-table th {
+        text-align: left;
+        padding: 8px 10px;
+        background: #f5f5f5;
+        color: var(--dim);
+        font-weight: 600;
+        font-size: 0.75rem;
+        border-bottom: 2px solid var(--border);
+      }
+      .pool-table td {
+        padding: 7px 10px;
+        border-bottom: 1px solid #f0f0f0;
+        vertical-align: middle;
+      }
+      .pool-table tr:last-child td {
+        border-bottom: none;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .dot-SSR {
+        background: var(--SSR);
+      }
+      .dot-SR {
+        background: var(--SR);
+      }
+      .dot-R {
+        background: var(--R);
+      }
+      .dot-N {
+        background: var(--N);
+      }
+      .pool-table input[type="text"] {
+        background: transparent;
+        border: none;
+        padding: 4px 6px;
+        font-size: 0.875rem;
+        width: 100%;
+        border-radius: 4px;
+      }
+      .pool-table input[type="text"]:focus {
+        background: #f0f7ff;
+        outline: none;
+      }
+      .pool-table select {
+        background: transparent;
+        border: none;
+        padding: 3px 6px;
+        font-size: 0.82rem;
+        cursor: pointer;
+        color: var(--text);
+      }
+      .pool-table select:focus {
+        outline: none;
+        background: #f0f7ff;
+      }
+
+      /* ── Action row ── */
+      .action-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .btn-simulate {
+        flex: 1;
+        min-width: 180px;
+        padding: 14px;
+        font-size: 1rem;
+        border-radius: 10px;
+        justify-content: center;
+      }
+
+      /* ── Alert ── */
+      .alert {
+        padding: 11px 15px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        font-size: 0.875rem;
+      }
+      .alert-err {
+        background: #ffebee;
+        border: 1px solid #ffcdd2;
+        color: #c62828;
+      }
+
+      /* ── Stat summary cards ── */
+      .stat-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 700px) {
+        .stat-row {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .stat {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 12px;
+        text-align: center;
+        box-shadow: var(--shadow);
+      }
+      .stat.highlight {
+        border: 2px solid var(--SSR);
+        background: #fff8e1;
+      }
+      .stat-icon {
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+      }
+      .stat-val {
+        font-size: 1.55rem;
+        font-weight: 800;
+        margin-bottom: 3px;
+      }
+      .stat-lbl {
+        font-size: 0.72rem;
+        color: var(--dim);
+        font-weight: 500;
+      }
+
+      /* ── Info bar ── */
+      .info-bar {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+        border-radius: 8px;
+        padding: 11px 15px;
+        margin-bottom: 14px;
+        font-size: 0.875rem;
+        color: #6d4c41;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* ── Section ── */
+      .sec {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+      }
+      .sec-title {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--dim);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* ── Horizontal progress bar ── */
+      .h-bar-row {
+        display: grid;
+        grid-template-columns: 60px 1fr 120px;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .h-bar-bg {
+        height: 16px;
+        background: #f0f0f0;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .h-bar-fill {
+        height: 100%;
+        border-radius: 8px;
+        transition: width 0.6s ease;
+      }
+      .h-bar-label {
+        font-size: 0.82rem;
+        color: var(--dim);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      /* ── Rarity table ── */
+      .rtable {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+      }
+      .rtable th {
+        text-align: left;
+        padding: 9px 12px;
+        background: #f5f5f5;
+        color: var(--dim);
+        font-weight: 600;
+        font-size: 0.75rem;
+        border-bottom: 2px solid var(--border);
+      }
+      .rtable td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f5f5f5;
+        vertical-align: middle;
+      }
+      .rtable tr:last-child td {
+        border-bottom: none;
+      }
+      .rtable tr:hover td {
+        background: #fafafa;
+      }
+      .plus {
+        color: var(--green);
+        font-weight: 700;
+      }
+      .minus {
+        color: var(--red);
+        font-weight: 700;
+      }
+      .zero {
+        color: var(--dim);
+      }
+
+      /* ── Inline bar in table ── */
+      .inline-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .inline-bar-bg {
+        flex: 1;
+        max-width: 120px;
+        height: 8px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .inline-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s;
+      }
+
+      /* ── Pull log ── */
+      .log-wrap {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      /* ── Pills ── */
+      .pill {
+        display: inline-block;
+        padding: 2px 9px;
+        border-radius: 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .pill-SSR {
+        background: var(--SSR);
+      }
+      .pill-SR {
+        background: var(--SR);
+      }
+      .pill-R {
+        background: var(--R);
+      }
+      .pill-N {
+        background: var(--N);
+      }
+      .pill-on {
+        background: #c8e6c9;
+        color: #1b5e20;
+        font-weight: 700;
+      }
+      .pill-off {
+        background: #f5f5f5;
+        color: var(--dim);
+        font-weight: 600;
+      }
+
+      /* ── Section divider ── */
+      .sec-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 28px 0 16px;
+        color: var(--dim);
+        font-size: 0.8rem;
+      }
+      .sec-divider::before,
+      .sec-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+      .sec-divider .pill-div {
+        background: #ede7f6;
+        color: #7b1fa2;
+        padding: 5px 16px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        white-space: nowrap;
+        font-weight: 600;
+      }
+
+      /* ── POV probability cards ── */
+      .pov-prob-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 500px) {
+        .pov-prob-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .pov-prob {
+        border-radius: var(--radius);
+        padding: 22px;
+        text-align: center;
+        border: 1px solid var(--border);
+      }
+      .pov-prob.good {
+        background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+        border-color: #a5d6a7;
+      }
+      .pov-prob.bad {
+        background: linear-gradient(135deg, #fff3e0, #fffde7);
+        border-color: #ffcc80;
+      }
+      .pov-pct {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .pov-prob.good .pov-pct {
+        color: #2e7d32;
+      }
+      .pov-prob.bad .pov-pct {
+        color: #e65100;
+      }
+      .pov-lbl {
+        font-size: 0.9rem;
+        color: var(--text);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .pov-sub {
+        font-size: 0.75rem;
+        color: var(--dim);
+      }
+
+      /* ── POV distribution ── */
+      .dist-row {
+        display: grid;
+        grid-template-columns: 80px 1fr 140px;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        font-size: 0.82rem;
+      }
+      .dist-key {
+        color: var(--dim);
+        font-weight: 500;
+      }
+      .dist-val {
+        color: var(--text);
+        text-align: right;
+        font-weight: 600;
+      }
+      .dist-bar-bg {
+        height: 20px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .dist-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: var(--R);
+        transition: width 0.6s ease;
+      }
+      .dist-bar-fill.zero-bar {
+        background: var(--red);
+      }
+
+      /* ── POV summary box ── */
+      .pov-sum-box {
+        border-radius: 10px;
+        padding: 16px;
+        font-size: 0.875rem;
+        line-height: 1.75;
+        margin-top: 12px;
+      }
+      .pov-sum-box.ok {
+        background: #e8f5e9;
+        border: 1px solid #a5d6a7;
+      }
+      .pov-sum-box.warn {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+      }
+      .pov-sum-box strong {
+        color: #1b5e20;
+      }
+      .pov-sum-box.warn strong {
+        color: #e65100;
+      }
+
+      /* ── 2-col for POV results ── */
+      .pov-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 700px) {
+        .pov-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Spinner ── */
+      .spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: middle;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f5f5f5;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #bdbdbd;
+        border-radius: 3px;
+      }
+      .row-btns {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .text-SSR {
+        color: var(--SSR);
+      }
+      .text-SR {
+        color: var(--SR);
+      }
+      .text-R {
+        color: var(--R);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ════════════════════════════════════════ HEADER ════ -->
+    <header>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          max-width: 1060px;
+          margin: 0 auto 12px;
+          padding: 0 4px;
+        "
+      >
+        <a
+          href="../index.html"
+          style="
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.78rem;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 4px;
+            transition: color 0.15s;
+          "
+          >← กลับหน้าหลัก</a
+        >
+        <a
+          href="prompt_log.html"
+          style="
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.78rem;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 4px;
+            transition: color 0.15s;
+          "
+          >📋 Prompt Log</a
+        >
+      </div>
+      <div class="header-badge">⚡ จำลองอัตราดรอป</div>
+      <h1>เครื่องจำลองกาชา</h1>
+      <p>ตั้งค่า • สร้าง Item Pool • จำลอง • วิเคราะห์ • ส่งออก</p>
+    </header>
+
+    <div class="wrap">
+      <!-- ════ TOP 2-COLUMN ════ -->
+      <div class="two-col">
+        <!-- ── Settings ── -->
+        <div class="card">
+          <div class="card-title">⚙️ ตั้งค่าการจำลอง</div>
+
+          <div
+            style="
+              font-size: 0.72rem;
+              font-weight: 700;
+              color: var(--dim);
+              text-transform: uppercase;
+              letter-spacing: 0.06em;
+              margin-bottom: 8px;
+            "
+          >
+            Quick Presets
+          </div>
+          <div class="preset-strip">
+            <button class="preset-btn" onclick="setPreset(100, this)">
+              100 ครั้ง
+            </button>
+            <button class="preset-btn" onclick="setPreset(1000, this)">
+              1,000 ครั้ง
+            </button>
+            <button class="preset-btn" onclick="setPreset(10000, this)">
+              10,000 ครั้ง
+            </button>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 12px;
+              margin-bottom: 16px;
+            "
+          >
+            <div class="field">
+              <label>จำนวนการสุ่ม</label>
+              <input
+                type="number"
+                id="inp-pulls"
+                class="input-big"
+                value="100"
+                min="1"
+                max="10000"
+              />
+            </div>
+            <div class="field">
+              <label>ราคาต่อครั้ง</label>
+              <input
+                type="number"
+                id="inp-price"
+                class="input-big"
+                value="30"
+                min="0"
+                step="any"
+              />
+            </div>
+          </div>
+
+          <hr
+            style="
+              border: none;
+              border-top: 1px solid var(--border);
+              margin-bottom: 14px;
+            "
+          />
+
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 10px;
+            "
+          >
+            <span
+              style="font-size: 0.82rem; font-weight: 600; color: var(--dim)"
+              >อัตราดรอป</span
+            >
+            <span class="rate-total ok" id="rate-total">รวม: 100%</span>
+          </div>
+          <div class="rate-grid" id="rate-grid"></div>
+
+          <hr
+            style="
+              border: none;
+              border-top: 1px solid var(--border);
+              margin-bottom: 12px;
+            "
+          />
+
+          <!-- Pity toggle -->
+          <div
+            class="toggle-row"
+            onclick="document.getElementById('pity-on').click()"
+          >
+            <label class="toggle" onclick="event.stopPropagation()">
+              <input type="checkbox" id="pity-on" onchange="onPityToggle()" />
+              <span class="toggle-sl"></span>
+            </label>
+            <div class="toggle-info">
+              <strong>Pity System</strong>
+              <span id="pity-desc"
+                >รับประกัน SSR หากสุ่ม 90 ครั้งติดต่อกันไม่ได้ SSR</span
+              >
+            </div>
+          </div>
+          <div class="toggle-sub" id="pity-sub">
+            <div class="toggle-sub-grid">
+              <div class="field">
+                <label>Hard Pity (รับประกัน SSR ที่ครั้งที่)</label>
+                <input
+                  type="number"
+                  id="hard-pity"
+                  value="90"
+                  min="2"
+                  oninput="updatePityDesc()"
+                />
+              </div>
+              <div class="field">
+                <label>Soft Pity เริ่มที่ครั้งที่</label>
+                <input
+                  type="number"
+                  id="soft-pity"
+                  value="74"
+                  min="1"
+                  oninput="updatePityDesc()"
+                />
+              </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 8px;
+                flex-wrap: wrap;
+              "
+            >
+              <label style="margin: 0; font-size: 0.78rem; color: var(--dim)"
+                >Pity counter ปัจจุบัน:</label
+              >
+              <input
+                type="number"
+                id="cur-pity"
+                value="0"
+                min="0"
+                style="width: 80px; flex: none"
+                oninput="updatePityDesc()"
+              />
+              <button class="btn btn-outline btn-sm" onclick="resetPity()">
+                ↺ Reset
+              </button>
+              <span
+                id="pity-bar-text"
+                style="font-size: 0.75rem; color: var(--dim)"
+              ></span>
+            </div>
+          </div>
+        </div>
+        <!-- /settings -->
+
+        <!-- ── Item Pool ── -->
+        <div class="card">
+          <div class="card-title">🎯 Item Pool</div>
+          <div
+            id="pool-err"
+            class="alert alert-err"
+            style="display: none"
+          ></div>
+          <div style="overflow-x: auto">
+            <table class="pool-table">
+              <thead>
+                <tr>
+                  <th style="width: 22px"></th>
+                  <th>Item Name</th>
+                  <th style="width: 90px">ความหายาก</th>
+                  <th style="width: 34px"></th>
+                </tr>
+              </thead>
+              <tbody id="pool-tbody"></tbody>
+            </table>
+          </div>
+          <div
+            id="pool-empty"
+            style="
+              display: none;
+              text-align: center;
+              padding: 24px;
+              color: var(--dim);
+              font-size: 0.85rem;
+            "
+          >
+            ยังไม่มีไอเทม
+          </div>
+          <div class="row-btns" style="margin-top: 12px">
+            <button class="btn btn-outline btn-sm" onclick="addItem()">
+              + Add Item
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="loadDefaults()">
+              ↺ Reset Default
+            </button>
+          </div>
+        </div>
+        <!-- /pool -->
+      </div>
+      <!-- /two-col -->
+
+      <!-- ════ ACTION BUTTONS ════ -->
+      <div class="action-row">
+        <button
+          class="btn btn-primary btn-simulate"
+          id="sim-btn"
+          onclick="runSim()"
+        >
+          ✨ เริ่มจำลอง
+        </button>
+        <button class="btn btn-outline" onclick="resetAll()">↺ Reset</button>
+        <button
+          class="btn btn-outline"
+          id="export-btn"
+          style="display: none"
+          onclick="exportResultsCSV()"
+        >
+          ⬇ ส่งออก CSV
+        </button>
+      </div>
+      <div id="sim-err" class="alert alert-err" style="display: none"></div>
+
+      <!-- ════ RESULTS ════ -->
+      <div id="results" style="display: none">
+        <div class="stat-row" id="stat-row"></div>
+        <div class="info-bar" id="info-bar"></div>
+
+        <!-- Graph -->
+        <div class="sec">
+          <div class="sec-title">📊 Graph</div>
+          <div id="graph-bars"></div>
+        </div>
+
+        <!-- Rarity table -->
+        <div class="sec">
+          <div class="sec-title">💎 ผลความหายาก</div>
+          <table class="rtable">
+            <thead>
+              <tr>
+                <th>ความหายาก</th>
+                <th>เป้าหมาย %</th>
+                <th>จำนวน</th>
+                <th>ผลจริง %</th>
+                <th>ส่วนต่าง</th>
+              </tr>
+            </thead>
+            <tbody id="rarity-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Item results -->
+        <div class="sec">
+          <div class="sec-title">🎁 Item Results</div>
+          <table class="rtable">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>ความหายาก</th>
+                <th>จำนวน</th>
+                <th>ผลจริง %</th>
+              </tr>
+            </thead>
+            <tbody id="item-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Pull log -->
+        <div class="sec">
+          <div class="sec-title" style="justify-content: space-between">
+            <span>📋 บันทึกการสุ่ม</span>
+            <span
+              id="log-count"
+              style="
+                font-size: 0.75rem;
+                color: var(--dim);
+                font-weight: 400;
+                text-transform: none;
+                letter-spacing: 0;
+              "
+            ></span>
+          </div>
+          <div class="log-wrap">
+            <table class="rtable">
+              <thead>
+                <tr>
+                  <th>ครั้งที่</th>
+                  <th>ความหายาก</th>
+                  <th>Item Name</th>
+                  <th>ราคา</th>
+                </tr>
+              </thead>
+              <tbody id="log-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- History -->
+        <div class="sec">
+          <div class="sec-title" style="justify-content: space-between">
+            <span>📜 ประวัติการจำลอง</span>
+            <button class="btn-danger" onclick="clearHistory()">
+              ล้างประวัติ
+            </button>
+          </div>
+          <table class="rtable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>สุ่ม</th>
+                <th>SSR</th>
+                <th>SSR%</th>
+                <th>TOP ITEM</th>
+                <th>PITY</th>
+              </tr>
+            </thead>
+            <tbody id="hist-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- /results -->
+
+      <!-- ════ PLAYER POV DIVIDER ════ -->
+      <div class="sec-divider">
+        <div class="pill-div">🧑‍💻 จำลองมุมมองผู้เล่น</div>
+      </div>
+
+      <!-- POV Settings -->
+      <div class="sec">
+        <div class="sec-title">💰 งบประมาณและการตั้งค่า</div>
+        <p
+          style="
+            font-size: 0.83rem;
+            color: var(--dim);
+            margin-bottom: 14px;
+            line-height: 1.65;
+          "
+        >
+          จำลองประสบการณ์กาชาจากมุมมองผู้เล่นด้วย Monte Carlo Analysis
+          ป้อนงบประมาณเพื่อดูโอกาสการได้ SSR —
+          จำนวนการจำลองถูก<strong>คำนวณอัตโนมัติ</strong>ให้สัมพันธ์กับจำนวนรอบการสุ่มต่อการจำลอง
+          เพื่อความแม่นยำทางสถิติที่เหมาะสม
+        </p>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+          "
+        >
+          <div class="field">
+            <label>งบประมาณ (บาท)</label>
+            <input
+              type="number"
+              id="pov-budget"
+              class="input-big"
+              value="3000"
+              min="1"
+              step="any"
+            />
+          </div>
+          <div class="field">
+            <label>ราคาต่อครั้ง (บาท)</label>
+            <input
+              type="number"
+              id="pov-price"
+              class="input-big"
+              value="30"
+              min="1"
+              step="any"
+            />
+          </div>
+        </div>
+
+        <hr
+          style="
+            border: none;
+            border-top: 1px solid var(--border);
+            margin-bottom: 12px;
+          "
+        />
+
+        <!-- Free Roll toggle -->
+        <div
+          class="toggle-row"
+          onclick="document.getElementById('free-on').click()"
+        >
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="free-on" onchange="onFreeToggle()" />
+            <span class="toggle-sl"></span>
+          </label>
+          <div class="toggle-info">
+            <strong>Free Roll Bonus</strong>
+            <span>รับ Free Roll Bonus ตามจำนวนครั้งที่จ่าย</span>
+          </div>
+        </div>
+        <div class="toggle-sub" id="free-sub">
+          <div class="toggle-sub-grid">
+            <div class="field">
+              <label>ทุก X paid rolls ได้ฟรี…</label>
+              <input type="number" id="free-every" value="10" min="1" />
+            </div>
+            <div class="field">
+              <label>…Y ครั้ง</label>
+              <input type="number" id="free-get" value="1" min="1" />
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="pov-err"
+          class="alert alert-err"
+          style="display: none; margin-top: 10px"
+        ></div>
+      </div>
+
+      <!-- POV Button row -->
+      <div
+        style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px"
+      >
+        <button
+          class="btn btn-primary btn-simulate"
+          id="pov-btn"
+          onclick="runPOV()"
+        >
+          🎲 รันการจำลองผู้เล่น
+        </button>
+        <button
+          class="btn btn-green btn-simulate"
+          id="pov-export-btn"
+          style="display: none"
+          onclick="exportPovCSV()"
+        >
+          ⬇ ส่งออก POV CSV
+        </button>
+      </div>
+
+      <!-- POV Results -->
+      <div id="pov-results" style="display: none">
+        <div class="pov-prob-row">
+          <div class="pov-prob good">
+            <div class="pov-pct" id="pov-got">—</div>
+            <div class="pov-lbl">โอกาสได้ SSR อย่างน้อย 1 ชิ้น</div>
+            <div class="pov-sub" id="pov-got-sub">—</div>
+          </div>
+          <div class="pov-prob bad">
+            <div class="pov-pct" id="pov-none">—</div>
+            <div class="pov-lbl">โอกาสไม่ได้ SSR เลย</div>
+            <div class="pov-sub" id="pov-none-sub">—</div>
+          </div>
+        </div>
+
+        <div class="pov-grid" style="margin-bottom: 14px">
+          <div class="sec" style="margin: 0">
+            <div class="sec-title">📋 สรุปการจำลอง</div>
+            <table class="rtable">
+              <tbody id="pov-sum-tbody"></tbody>
+            </table>
+          </div>
+          <div class="sec" style="margin: 0">
+            <div class="sec-title">
+              📈 การกระจาย SSR
+              <span
+                id="pov-dist-note"
+                style="
+                  font-size: 0.72rem;
+                  font-weight: 400;
+                  text-transform: none;
+                  letter-spacing: 0;
+                  color: var(--dim);
+                "
+                >จากทุกการจำลอง</span
+              >
+            </div>
+            <div id="pov-dist"></div>
+          </div>
+        </div>
+
+        <div id="pov-sum-text" class="pov-sum-box ok"></div>
+      </div>
+      <!-- /pov-results -->
+    </div>
+    <!-- /wrap -->
+
+    <script>
+      "use strict";
+
+      /* ────────────────────────────── STATE ────────────────────────────── */
+      const S = {
+        rates: { SSR: 1, SR: 9, R: 30, N: 60 },
+        items: [],
+        pity: { on: false, hard: 90, soft: 74, cur: 0 },
+        history: [],
+        sim: null,
+        mc: null,
+      };
+      let _id = 1;
+      const RARITIES = ["SSR", "SR", "R", "N"];
+      const RC = { SSR: "#FF9800", SR: "#9C27B0", R: "#2196F3", N: "#757575" };
+
+      /* ──────────────────────────── RATE UI ─────────────────────────────── */
+      function initRateGrid() {
+        document.getElementById("rate-grid").innerHTML = RARITIES.map(
+          (r) => `
+    <div class="rate-card ${r}">
+      <span class="rarity-lbl lbl-${r}">${r}</span>
+      <input type="number" id="rate-${r}" value="${S.rates[r]}" min="0" max="100" step="0.01" oninput="onRateChange()">
+      <div class="rate-unit">%</div>
+    </div>`,
+        ).join("");
+      }
+
+      function onRateChange() {
+        RARITIES.forEach((r) => {
+          const v = parseFloat(document.getElementById("rate-" + r).value);
+          S.rates[r] = isNaN(v) ? 0 : v;
+        });
+        const total = RARITIES.reduce((s, r) => s + S.rates[r], 0);
+        const rounded = Math.round(total * 1e4) / 1e4;
+        const el = document.getElementById("rate-total");
+        el.textContent = "รวม: " + rounded + "%";
+        el.className =
+          "rate-total " + (Math.abs(total - 100) < 0.01 ? "ok" : "err");
+      }
+
+      /* ──────────────────────────── PRESETS ────────────────────────────── */
+      function setPreset(n, btn) {
+        document.getElementById("inp-pulls").value = n;
+        document
+          .querySelectorAll(".preset-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+
+      /* ──────────────────────────── PITY ──────────────────────────────── */
+      function onPityToggle() {
+        S.pity.on = document.getElementById("pity-on").checked;
+        document.getElementById("pity-sub").classList.toggle("show", S.pity.on);
+        updatePityDesc();
+      }
+      function updatePityDesc() {
+        S.pity.hard =
+          parseInt(document.getElementById("hard-pity").value) || 90;
+        S.pity.soft =
+          parseInt(document.getElementById("soft-pity").value) || 74;
+        S.pity.cur = parseInt(document.getElementById("cur-pity").value) || 0;
+        document.getElementById("pity-desc").textContent =
+          `รับประกัน SSR หากสุ่ม ${S.pity.hard} ครั้งติดต่อกันไม่ได้ SSR`;
+        const pct = Math.min((S.pity.cur / S.pity.hard) * 100, 100).toFixed(0);
+        document.getElementById("pity-bar-text").textContent =
+          `${S.pity.cur}/${S.pity.hard} (${pct}%)`;
+      }
+      function resetPity() {
+        document.getElementById("cur-pity").value = 0;
+        S.pity.cur = 0;
+        updatePityDesc();
+      }
+
+      /* ─────────────────────────── FREE ROLL ──────────────────────────── */
+      function onFreeToggle() {
+        document
+          .getElementById("free-sub")
+          .classList.toggle("show", document.getElementById("free-on").checked);
+      }
+
+      /* ─────────────────────────── ITEM POOL ──────────────────────────── */
+      function addItem(name = "", rarity = "N") {
+        S.items.push({ id: _id++, name, rarity });
+        renderPool();
+      }
+      function removeItem(id) {
+        S.items = S.items.filter((i) => i.id !== id);
+        renderPool();
+      }
+      function updateItemName(id, val) {
+        const i = S.items.find((x) => x.id === id);
+        if (i) i.name = val.trim();
+      }
+      function updateItemRarity(id, val) {
+        const i = S.items.find((x) => x.id === id);
+        if (i) {
+          i.rarity = val;
+          renderPool();
+        }
+      }
+
+      function renderPool() {
+        const tbody = document.getElementById("pool-tbody");
+        const empty = document.getElementById("pool-empty");
+        if (!S.items.length) {
+          tbody.innerHTML = "";
+          empty.style.display = "block";
+          return;
+        }
+        empty.style.display = "none";
+        tbody.innerHTML = S.items
+          .map(
+            (it) => `
+    <tr>
+      <td><span class="dot dot-${it.rarity}"></span></td>
+      <td><input type="text" value="${esc(it.name)}" placeholder="Item Name…" maxlength="50" oninput="updateItemName(${it.id},this.value)"></td>
+      <td>
+        <select onchange="updateItemRarity(${it.id},this.value)">
+          ${RARITIES.map((r) => `<option value="${r}"${it.rarity === r ? " selected" : ""}>${r}</option>`).join("")}
+        </select>
+      </td>
+      <td><button class="btn-danger" onclick="removeItem(${it.id})">×</button></td>
+    </tr>`,
+          )
+          .join("");
+      }
+
+      function loadDefaults() {
+        S.items = [
+          { id: _id++, name: "เอ็กซ์คาลิเบอร์", rarity: "SSR" },
+          { id: _id++, name: "ปีกนกฟีนิกซ์", rarity: "SSR" },
+          { id: _id++, name: "เกราะเกล็ดมังกร", rarity: "SR" },
+          { id: _id++, name: "คันธนูงู", rarity: "SR" },
+          { id: _id++, name: "ดาบเหล็ก", rarity: "R" },
+          { id: _id++, name: "โล่หนัง", rarity: "R" },
+          { id: _id++, name: "ยาฟื้นพลัง", rarity: "N" },
+          { id: _id++, name: "ลูกศรไม้", rarity: "N" },
+        ];
+        renderPool();
+      }
+
+      /* ─────────────────────────── SIMULATION ENGINE ──────────────────── */
+      function drawRarity() {
+        const r = Math.random() * 100;
+        let c = 0;
+        for (const k of RARITIES) {
+          c += S.rates[k];
+          if (r < c) return k;
+        }
+        return "N";
+      }
+      function drawRarityPity(pullNum) {
+        if (!S.pity.on) return drawRarity();
+        if (pullNum >= S.pity.hard) return "SSR";
+        let ssrRate = S.rates.SSR;
+        if (pullNum >= S.pity.soft && S.pity.hard > S.pity.soft) {
+          const t = (pullNum - S.pity.soft) / (S.pity.hard - S.pity.soft);
+          ssrRate = S.rates.SSR + (100 - S.rates.SSR) * t;
+        }
+        ssrRate = Math.min(ssrRate, 100);
+        const r = Math.random() * 100;
+        if (r < ssrRate) return "SSR";
+        const baseNon = 100 - S.rates.SSR;
+        if (baseNon <= 0) return "N";
+        const scale = (100 - ssrRate) / baseNon;
+        let cum = ssrRate;
+        for (const k of ["SR", "R", "N"]) {
+          cum += S.rates[k] * scale;
+          if (r < cum) return k;
+        }
+        return "N";
+      }
+      function pickItem(rarity) {
+        const pool = S.items.filter((i) => i.rarity === rarity);
+        return pool.length
+          ? pool[Math.floor(Math.random() * pool.length)]
+          : { name: `[${rarity}]`, rarity };
+      }
+      function countRar(results) {
+        const c = { SSR: 0, SR: 0, R: 0, N: 0 };
+        results.forEach((r) => c[r.rarity]++);
+        return c;
+      }
+      function topItem(results) {
+        const m = {};
+        results.forEach((r) => {
+          m[r.name] = (m[r.name] || 0) + 1;
+        });
+        return Object.entries(m).sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
+      }
+      function maxRarity(cnt) {
+        for (const r of RARITIES) {
+          if (cnt[r] > 0) return r;
+        }
+        return "N";
+      }
+
+      /* ─────────────────────────── RUN SIM ────────────────────────────── */
+      function validate() {
+        const errs = [];
+        const total = RARITIES.reduce((s, r) => s + S.rates[r], 0);
+        if (Math.abs(total - 100) > 0.01)
+          errs.push(
+            `อัตราดรอปรวม ${Math.round(total * 1e4) / 1e4}% — ต้องเท่ากับ 100%`,
+          );
+        const p = parseInt(document.getElementById("inp-pulls").value);
+        if (!p || p < 1) errs.push("จำนวนการสุ่มต้องมากกว่า 0");
+        if (p > 10000) errs.push("จำนวนการสุ่มสูงสุด 10,000 ครั้ง");
+        const pr = parseFloat(document.getElementById("inp-price").value);
+        if (isNaN(pr) || pr < 0)
+          errs.push("ราคาต่อครั้งต้องมากกว่าหรือเท่ากับ 0");
+        if (S.pity.on && S.pity.hard <= S.pity.soft)
+          errs.push("Hard pity ต้องมากกว่า soft pity");
+        return errs;
+      }
+
+      function runSim() {
+        // sync pity state from inputs
+        S.pity.on = document.getElementById("pity-on").checked;
+        S.pity.hard =
+          parseInt(document.getElementById("hard-pity").value) || 90;
+        S.pity.soft =
+          parseInt(document.getElementById("soft-pity").value) || 74;
+        S.pity.cur = parseInt(document.getElementById("cur-pity").value) || 0;
+
+        const errEl = document.getElementById("sim-err");
+        const errs = validate();
+        if (errs.length) {
+          showErr(errEl, errs.join("<br>"));
+          return;
+        }
+        hideErr(errEl);
+
+        const pulls = parseInt(document.getElementById("inp-pulls").value);
+        const price =
+          parseFloat(document.getElementById("inp-price").value) || 0;
+        const results = [];
+        let pity = S.pity.cur;
+
+        for (let i = 0; i < pulls; i++) {
+          pity++;
+          const rarity = drawRarityPity(pity);
+          if (rarity === "SSR") pity = 0;
+          const item = pickItem(rarity);
+          results.push({ n: i + 1, rarity, name: item.name, pityNum: pity });
+        }
+
+        // update pity counter
+        S.pity.cur = pity;
+        document.getElementById("cur-pity").value = pity;
+        updatePityDesc();
+
+        const cnt = countRar(results);
+        const top = topItem(results);
+        S.sim = { results, price, pulls, cnt, top, pityOn: S.pity.on };
+
+        S.history.unshift({
+          n: S.history.length + 1,
+          pulls,
+          cnt,
+          top,
+          pityOn: S.pity.on,
+        });
+        if (S.history.length > 50) S.history.pop();
+
+        renderResults(S.sim);
+        document.getElementById("export-btn").style.display = "inline-flex";
+      }
+
+      /* ─────────────────────────── RENDER RESULTS ─────────────────────── */
+      function renderResults(sim) {
+        const { results, price, pulls, cnt, top } = sim;
+        const total = results.length;
+        const cost = total * price;
+
+        document.getElementById("results").style.display = "block";
+
+        // Stat cards
+        document.getElementById("stat-row").innerHTML = `
+    <div class="stat"><div class="stat-icon">🎲</div><div class="stat-val">${total.toLocaleString()}</div><div class="stat-lbl">จำนวนรวม</div></div>
+    <div class="stat"><div class="stat-icon">💰</div><div class="stat-val">${cost.toLocaleString()}</div><div class="stat-lbl">ค่าใช้จ่าย</div></div>
+    <div class="stat highlight"><div class="stat-icon">⭐</div><div class="stat-val text-SSR">${cnt.SSR}</div><div class="stat-lbl">จำนวน SSR</div></div>
+    <div class="stat"><div class="stat-icon">🏆</div><div class="stat-val" style="font-size:1.1rem">${maxRarity(cnt)}</div><div class="stat-lbl">หายากสูงสุด</div></div>
+    <div class="stat"><div class="stat-icon">✨</div><div class="stat-val" style="font-size:.9rem;line-height:1.2">${esc(top)}</div><div class="stat-lbl">Top Item</div></div>`;
+
+        // Info bar
+        const exp = ((total * S.rates.SSR) / 100).toFixed(1);
+        document.getElementById("info-bar").innerHTML =
+          `🎯 ตรงตามอัตรา ได้ SSR <strong>${cnt.SSR} ชิ้น</strong> ใกล้เคียงกับที่คาดไว้ <strong>${exp} ชิ้น</strong>`;
+
+        // Graph bars
+        const maxC = Math.max(...RARITIES.map((r) => cnt[r]), 1);
+        document.getElementById("graph-bars").innerHTML = RARITIES.map((r) => {
+          const pct = total ? (cnt[r] / total) * 100 : 0;
+          const bw = ((cnt[r] / maxC) * 100).toFixed(1);
+          return `
+      <div class="h-bar-row">
+        <span><span class="pill pill-${r}">${r}</span></span>
+        <div class="h-bar-bg"><div class="h-bar-fill" style="width:${bw}%;background:${RC[r]}"></div></div>
+        <span class="h-bar-label"><strong>${cnt[r]}</strong>(${pct.toFixed(2)}%)</span>
+      </div>`;
+        }).join("");
+
+        // Rarity table
+        document.getElementById("rarity-tbody").innerHTML = RARITIES.map(
+          (r) => {
+            const actual = total ? (cnt[r] / total) * 100 : 0;
+            const diff = actual - S.rates[r];
+            const diffTxt = (diff > 0 ? "+" : "") + diff.toFixed(2) + "%";
+            const cls = diff > 0.01 ? "plus" : diff < -0.01 ? "minus" : "zero";
+            return `<tr>
+      <td><span class="dot dot-${r}" style="margin-right:6px"></span><strong>${r}</strong></td>
+      <td>${S.rates[r]}%</td><td><strong>${cnt[r]}</strong></td>
+      <td>${actual.toFixed(2)}%</td><td class="${cls}">${diffTxt}</td></tr>`;
+          },
+        ).join("");
+
+        // Item results
+        const imap = {};
+        results.forEach((r) => {
+          if (!imap[r.name])
+            imap[r.name] = { name: r.name, rarity: r.rarity, n: 0 };
+          imap[r.name].n++;
+        });
+        const sorted = Object.values(imap).sort((a, b) => {
+          const ro = { SSR: 0, SR: 1, R: 2, N: 3 };
+          return ro[a.rarity] - ro[b.rarity] || b.n - a.n;
+        });
+        const mx = sorted[0]?.n || 1;
+        document.getElementById("item-tbody").innerHTML = sorted
+          .map(
+            (it) => `
+    <tr>
+      <td><span class="dot dot-${it.rarity}" style="margin-right:6px"></span>${esc(it.name)}</td>
+      <td><span class="pill pill-${it.rarity}">${it.rarity}</span></td>
+      <td><div class="inline-bar">
+        <span style="min-width:28px;font-weight:700">${it.n}</span>
+        <div class="inline-bar-bg"><div class="inline-bar-fill" style="width:${(it.n / mx) * 100}%;background:${RC[it.rarity]}"></div></div>
+      </div></td>
+      <td>${((it.n / total) * 100).toFixed(2)}%</td>
+    </tr>`,
+          )
+          .join("");
+
+        // Pull log
+        document.getElementById("log-count").textContent = `(${total} ครั้ง)`;
+        document.getElementById("log-tbody").innerHTML = results
+          .map(
+            (r) => `
+    <tr>
+      <td style="color:var(--dim)">${r.n}</td>
+      <td><span class="pill pill-${r.rarity}">${r.rarity}</span></td>
+      <td>${esc(r.name)}</td>
+      <td>${price.toLocaleString()}</td>
+    </tr>`,
+          )
+          .join("");
+
+        renderHistory();
+        document
+          .getElementById("results")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      function renderHistory() {
+        const tbody = document.getElementById("hist-tbody");
+        if (!S.history.length) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--dim);padding:16px">ยังไม่มีประวัติ</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = S.history
+          .map((h, i) => {
+            const pct =
+              h.pulls > 0 ? ((h.cnt.SSR / h.pulls) * 100).toFixed(2) : "0.00";
+            return `<tr>
+      <td style="color:var(--dim)">${i + 1}</td>
+      <td><strong>${h.pulls}</strong></td>
+      <td class="text-SSR"><strong>${h.cnt.SSR}</strong></td>
+      <td>${pct}%</td>
+      <td>${esc(h.top)}</td>
+      <td><span class="pill ${h.pityOn ? "pill-on" : "pill-off"}">${h.pityOn ? "เปิด" : "ปิด"}</span></td>
+    </tr>`;
+          })
+          .join("");
+      }
+
+      function clearHistory() {
+        if (confirm("ล้างประวัติการจำลองทั้งหมด?")) {
+          S.history = [];
+          renderHistory();
+        }
+      }
+      function resetAll() {
+        document.getElementById("results").style.display = "none";
+        document.getElementById("export-btn").style.display = "none";
+        S.sim = null;
+      }
+
+      /* ──────────────────────── EXPORT RESULTS CSV ─────────────────────── */
+      function exportResultsCSV() {
+        if (!S.sim) return alert("ยังไม่มีผลการจำลอง");
+        const { results, price, cnt } = S.sim;
+        const total = results.length;
+        let csv = "\uFEFF";
+        csv += "ครั้งที่,ความหายาก,Item Name,ราคา\n";
+        results.forEach((r) => {
+          csv += `${r.n},${r.rarity},"${r.name}",${price}\n`;
+        });
+        csv += "\nสรุปผล\nความหายาก,เป้าหมาย%,จำนวน,ผลจริง%,ส่วนต่าง\n";
+        RARITIES.forEach((r) => {
+          const a = total ? ((cnt[r] / total) * 100).toFixed(3) : 0;
+          csv += `${r},${S.rates[r]}%,${cnt[r]},${a}%,${(a - S.rates[r]).toFixed(3)}%\n`;
+        });
+        csv += `\nจำนวนรวม,${total}\nค่าใช้จ่าย,${(total * price).toLocaleString()}\n`;
+        download(csv, `gacha_results_${Date.now()}.csv`);
+      }
+
+      /* ──────────────────────── MONTE CARLO (POV) ─────────────────────── */
+      function runPOV() {
+        const povErr = document.getElementById("pov-err");
+        hideErr(povErr);
+
+        const errs = [];
+        const total = RARITIES.reduce((s, r) => s + S.rates[r], 0);
+        if (Math.abs(total - 100) > 0.01) errs.push("อัตราดรอปต้องรวม 100%");
+        const budget = parseFloat(document.getElementById("pov-budget").value);
+        const priceP = parseFloat(document.getElementById("pov-price").value);
+        if (isNaN(budget) || budget <= 0) errs.push("งบประมาณต้องมากกว่า 0");
+        if (isNaN(priceP) || priceP <= 0)
+          errs.push("ราคาต่อครั้งต้องมากกว่า 0");
+        if (errs.length) {
+          showErr(povErr, errs.join("<br>"));
+          return;
+        }
+
+        const freeOn = document.getElementById("free-on").checked;
+        const freeEvery =
+          parseInt(document.getElementById("free-every").value) || 10;
+        const freeGet =
+          parseInt(document.getElementById("free-get").value) || 1;
+        const paidPulls = Math.floor(budget / priceP);
+        if (paidPulls < 1) {
+          showErr(povErr, "งบประมาณไม่พอสำหรับแม้แต่การสุ่มครั้งเดียว");
+          return;
+        }
+
+        const freePulls = freeOn
+          ? Math.floor(paidPulls / freeEvery) * freeGet
+          : 0;
+        const totalPerSim = paidPulls + freePulls;
+        const iters = Math.min(
+          Math.max(Math.round(500000 / Math.max(totalPerSim, 1)), 500),
+          10000,
+        );
+
+        // sync pity
+        S.pity.on = document.getElementById("pity-on").checked;
+        S.pity.hard =
+          parseInt(document.getElementById("hard-pity").value) || 90;
+        S.pity.soft =
+          parseInt(document.getElementById("soft-pity").value) || 74;
+
+        const btn = document.getElementById("pov-btn");
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> กำลังจำลอง…';
+
+        setTimeout(() => {
+          try {
+            let ssrSum = 0,
+              srSum = 0,
+              rSum = 0,
+              nSum = 0,
+              got1 = 0,
+              maxSSR = 0;
+            const dist = {};
+            for (let it = 0; it < iters; it++) {
+              let pity = 0,
+                ssr = 0,
+                sr = 0,
+                rc = 0,
+                nc = 0;
+              for (let p = 0; p < totalPerSim; p++) {
+                pity++;
+                const r = drawRarityPity(pity);
+                if (r === "SSR") {
+                  ssr++;
+                  pity = 0;
+                } else if (r === "SR") sr++;
+                else if (r === "R") rc++;
+                else nc++;
+              }
+              ssrSum += ssr;
+              srSum += sr;
+              rSum += rc;
+              nSum += nc;
+              if (ssr >= 1) got1++;
+              if (ssr > maxSSR) maxSSR = ssr;
+              dist[ssr] = (dist[ssr] || 0) + 1;
+            }
+            const avgSSR = ssrSum / iters;
+            const prob1 = got1 / iters;
+            const worstSSR = (dist[0] || 0) > 0 ? 0 : 1;
+
+            S.mc = {
+              iters,
+              budget,
+              priceP,
+              paidPulls,
+              freePulls,
+              totalPerSim,
+              avgSSR,
+              maxSSR,
+              worstSSR,
+              prob1,
+              dist,
+              avgSR: srSum / iters,
+              avgR: rSum / iters,
+              avgN: nSum / iters,
+            };
+            renderPOV(S.mc);
+            document.getElementById("pov-export-btn").style.display =
+              "inline-flex";
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = "🎲 รันการจำลองผู้เล่น";
+          }
+        }, 10);
+      }
+
+      function renderPOV(mc) {
+        document.getElementById("pov-results").style.display = "block";
+        const got = (mc.prob1 * 100).toFixed(1);
+        const none = ((1 - mc.prob1) * 100).toFixed(1);
+
+        document.getElementById("pov-got").textContent = got + "%";
+        document.getElementById("pov-got-sub").textContent =
+          `${Math.round(mc.prob1 * mc.iters).toLocaleString()} จาก ${mc.iters.toLocaleString()} การจำลอง`;
+        document.getElementById("pov-none").textContent = none + "%";
+        document.getElementById("pov-none-sub").textContent =
+          `${Math.round((1 - mc.prob1) * mc.iters).toLocaleString()} จาก ${mc.iters.toLocaleString()} การจำลอง`;
+
+        // Summary table rows
+        const rows = [
+          ["งบประมาณ", `${mc.budget.toLocaleString()} บาท`],
+          ["ราคาต่อครั้ง", `${mc.priceP} บาท`],
+          ["สุ่มที่จ่าย", `${mc.paidPulls}`],
+          ["Free Rolls", `${mc.freePulls}`],
+          ["รวมทั้งหมด", `${mc.totalPerSim}`],
+          ["การจำลอง (อัตโนมัติ)", `${mc.iters.toLocaleString()} ครั้ง`],
+          [
+            "SSR เฉลี่ย",
+            `<span class="text-SSR" style="font-weight:800">${mc.avgSSR.toFixed(2)} ชิ้น</span>`,
+          ],
+          ["SR เฉลี่ย", `${mc.avgSR.toFixed(2)} ชิ้น`],
+          ["R เฉลี่ย", `${mc.avgR.toFixed(2)} ชิ้น`],
+          ["N เฉลี่ย", `${mc.avgN.toFixed(2)} ชิ้น`],
+          [
+            "ผลดีที่สุด (SSR)",
+            `<span class="text-SSR" style="font-weight:800">${mc.maxSSR} ชิ้น</span>`,
+          ],
+          [
+            "ผลแย่ที่สุด (SSR)",
+            `${mc.worstSSR === 0 ? '<span style="color:var(--red);font-weight:700">0 ชิ้น</span>' : "≥1 ชิ้น"}`,
+          ],
+        ];
+        document.getElementById("pov-sum-tbody").innerHTML = rows
+          .map(
+            ([k, v]) =>
+              `<tr><td style="color:var(--dim);padding:7px 10px;border-bottom:1px solid #F5F5F5;font-size:.83rem">${k}</td>
+         <td style="padding:7px 10px;border-bottom:1px solid #F5F5F5;font-size:.83rem;font-weight:600">${v}</td></tr>`,
+          )
+          .join("");
+
+        // Distribution bars
+        const distKeys = Object.keys(mc.dist).sort((a, b) => a - b);
+        const maxFreq = Math.max(...Object.values(mc.dist));
+        document.getElementById("pov-dist").innerHTML = distKeys
+          .map((k) => {
+            const freq = mc.dist[k];
+            const pct = ((freq / mc.iters) * 100).toFixed(1);
+            const bw = ((freq / maxFreq) * 100).toFixed(1);
+            return `
+      <div class="dist-row">
+        <span class="dist-key">${k} SSR${parseInt(k) !== 1 ? "" : ""}</span>
+        <div class="dist-bar-bg"><div class="dist-bar-fill ${parseInt(k) === 0 ? "zero-bar" : ""}" style="width:${bw}%"></div></div>
+        <span class="dist-val">${freq.toLocaleString()} (${pct}%)</span>
+      </div>`;
+          })
+          .join("");
+
+        // Summary text
+        const warn = mc.prob1 < 0.5;
+        const box = document.getElementById("pov-sum-text");
+        box.className = "pov-sum-box " + (warn ? "warn" : "ok");
+        box.innerHTML = `
+    ด้วยงบประมาณ <strong>${mc.budget.toLocaleString()} บาท</strong> ราคา ${mc.priceP} บาทต่อครั้ง
+    ผู้เล่นจะได้<strong>สุ่ม ${mc.paidPulls} ครั้ง</strong>${mc.freePulls > 0 ? ` + Free ${mc.freePulls} ครั้ง` : ""}
+    รวม<strong>${mc.totalPerSim} ครั้ง</strong>
+    จากการจำลอง <strong>${mc.iters.toLocaleString()} ครั้ง</strong> ที่อัตรา SSR ${S.rates.SSR}%
+    โอกาสได้ SSR อย่างน้อย 1 ชิ้น คือ <strong>${(mc.prob1 * 100).toFixed(1)}%</strong>
+    ${warn ? `<br><br>⚠️ <strong>คำเตือน:</strong> มีโอกาสสูงถึง <strong>${((1 - mc.prob1) * 100).toFixed(1)}%</strong> ที่ผู้เล่นจะใช้งบหมดโดยไม่ได้ SSR เลย ควรเพิ่ม Pity System หรือปรับอัตรา SSR` : ""}`;
+
+        document
+          .getElementById("pov-results")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      /* ──────────────────────── EXPORT POV CSV ────────────────────────── */
+      function exportPovCSV() {
+        if (!S.mc) return alert("ยังไม่มีผลการจำลองผู้เล่น");
+        const mc = S.mc;
+        let csv = "\uFEFF";
+        csv += "สรุปการจำลองผู้เล่น (Monte Carlo)\n";
+        csv += `งบประมาณ,${mc.budget}\nราคาต่อครั้ง,${mc.priceP}\n`;
+        csv += `สุ่มที่จ่าย,${mc.paidPulls}\nFree Rolls,${mc.freePulls}\nรวม,${mc.totalPerSim}\n`;
+        csv += `การจำลอง,${mc.iters}\n\nโอกาสได้ SSR,${(mc.prob1 * 100).toFixed(2)}%\n`;
+        csv += `SSR เฉลี่ย,${mc.avgSSR.toFixed(3)}\nSSR สูงสุด,${mc.maxSSR}\n\n`;
+        csv += "การกระจาย SSR\nจำนวน SSR,ความถี่,ความน่าจะเป็น\n";
+        Object.keys(mc.dist)
+          .sort((a, b) => a - b)
+          .forEach((k) => {
+            csv += `${k},${mc.dist[k]},${((mc.dist[k] / mc.iters) * 100).toFixed(2)}%\n`;
+          });
+        download(csv, `gacha_pov_${Date.now()}.csv`);
+      }
+
+      /* ─────────────────────────── UTILITIES ─────────────────────────── */
+      function showErr(el, msg) {
+        el.innerHTML = "⚠️ " + msg;
+        el.style.display = "block";
+      }
+      function hideErr(el) {
+        el.style.display = "none";
+      }
+      function esc(s) {
+        const d = document.createElement("div");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+      function download(text, filename) {
+        const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = Object.assign(document.createElement("a"), {
+          href: url,
+          download: filename,
+        });
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      /* ─────────────────────────── INIT ──────────────────────────────── */
+      (function () {
+        initRateGrid();
+        loadDefaults();
+      })();
+    </script>
+  </body>
+</html>

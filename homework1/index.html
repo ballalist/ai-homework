@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Feedback Classifier — Submission</title>
+    <style>
+      :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --success: #22c55e;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --bg: #0f172a;
+        --bg2: #1e293b;
+        --bg3: #334155;
+        --text: #f1f5f9;
+        --text2: #cbd5e1;
+        --text3: #94a3b8;
+        --border: #334155;
+        --card: #1e293b;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", "Noto Sans Thai", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          #312e81 0%,
+          #4f46e5 40%,
+          #7c3aed 70%,
+          #be185d 100%
+        );
+        padding: 4rem 2rem 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+      .hero-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 20px;
+        padding: 0.35rem 1rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        margin-bottom: 1.25rem;
+      }
+      .hero h1 {
+        font-size: 2.4rem;
+        font-weight: 800;
+        margin-bottom: 0.6rem;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        line-height: 1.2;
+      }
+      .hero p {
+        font-size: 1.05rem;
+        opacity: 0.85;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+      .hero-meta {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+      }
+      .hero-meta-item {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        padding: 0.45rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      /* ── CONTAINER ── */
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+      }
+
+      /* ── SECTION TITLE ── */
+      .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        border-left: 4px solid var(--primary);
+        padding-left: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      /* ── DELIVERABLES GRID ── */
+      .deliverables-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 3rem;
+      }
+      .del-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: inherit;
+        transition:
+          border-color 0.2s,
+          transform 0.15s,
+          box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .del-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+      }
+      .del-icon {
+        font-size: 2rem;
+        line-height: 1;
+      }
+      .del-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+      .del-desc {
+        font-size: 0.83rem;
+        color: var(--text3);
+        line-height: 1.5;
+        flex: 1;
+      }
+      .del-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-top: 0.25rem;
+      }
+      .del-card.primary {
+        border-color: rgba(99, 102, 241, 0.4);
+      }
+      .del-card.success {
+        border-color: rgba(34, 197, 94, 0.3);
+      }
+      .del-card.warning {
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+
+      /* ── CHECKLIST ── */
+      .checklist {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 3rem;
+      }
+      .checklist table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+      .checklist th {
+        text-align: left;
+        padding: 0.6rem 1rem;
+        background: var(--bg3);
+        color: var(--text2);
+        font-weight: 600;
+      }
+      .checklist th:first-child {
+        border-radius: 6px 0 0 6px;
+      }
+      .checklist th:last-child {
+        border-radius: 0 6px 6px 0;
+      }
+      .checklist td {
+        padding: 0.65rem 1rem;
+        border-top: 1px solid var(--border);
+        color: var(--text2);
+        vertical-align: middle;
+      }
+      .checklist tr:hover td {
+        background: rgba(99, 102, 241, 0.04);
+      }
+      .check-done {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--success);
+      }
+      .check-done::before {
+        content: "✓";
+      }
+      .badge-req {
+        display: inline-block;
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border-radius: 20px;
+        padding: 0.1rem 0.55rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+      .badge-opt {
+        display: inline-block;
+        background: rgba(99, 102, 241, 0.15);
+        color: #818cf8;
+        border-radius: 20px;
+        padding: 0.1rem 0.55rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+
+      /* ── WORKFLOW ── */
+      .wf-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+      .wf-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.1rem;
+        text-align: center;
+      }
+      .wf-num {
+        width: 28px;
+        height: 28px;
+        background: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin: 0 auto 0.6rem;
+      }
+      .wf-icon {
+        font-size: 1.4rem;
+        margin-bottom: 0.4rem;
+      }
+      .wf-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+      .wf-sub {
+        font-size: 0.72rem;
+        color: var(--text3);
+        line-height: 1.4;
+      }
+
+      /* ── STATS BAR ── */
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+      }
+      .stat-val {
+        font-size: 2rem;
+        font-weight: 800;
+      }
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--text3);
+        margin-top: 0.2rem;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        background: var(--bg2);
+        border-top: 1px solid var(--border);
+        padding: 1.5rem 2rem;
+        text-align: center;
+        color: var(--text3);
+        font-size: 0.8rem;
+      }
+
+      @media (max-width: 600px) {
+        .hero h1 {
+          font-size: 1.6rem;
+        }
+        .deliverables-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-badge">🎮 AI Workflow Challenge — Submission</div>
+      <h1>AI Feedback Classifier</h1>
+      <p>
+        เปลี่ยน Feedback ผู้เล่นเกม 300 รายการ ให้เป็น Insight Report
+        ที่ใช้งานต่อได้จริง ด้วย AI Classification Engine
+      </p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">📊 300 Feedback Items</div>
+        <div class="hero-meta-item">🤖 AI Classification Engine</div>
+        <div class="hero-meta-item">📅 ช่วงข้อมูล: 2026-05-02 – 2026-05-23</div>
+        <div class="hero-meta-item">🗓 Submitted: June 5, 2026</div>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- KEY STATS -->
+      <section style="margin-bottom: 3rem">
+        <h2 class="section-title">Key Stats</h2>
+        <div class="stats-bar">
+          <div class="stat-card">
+            <div class="stat-val" style="color: #6366f1">300</div>
+            <div class="stat-label">Total Feedback</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" style="color: #22c55e">9</div>
+            <div class="stat-label">Categories</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" style="color: #ef4444">3</div>
+            <div class="stat-label">Priority Levels</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" style="color: #f59e0b">8</div>
+            <div class="stat-label">Feedback Channels</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" style="color: #14b8a6">5</div>
+            <div class="stat-label">Player Segments</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val" style="color: #8b5cf6">30</div>
+            <div class="stat-label">Validated Samples</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DELIVERABLES -->
+      <section style="margin-bottom: 3rem">
+        <h2 class="section-title">ไฟล์ที่ส่ง</h2>
+        <div class="deliverables-grid">
+          <a href="report.html" class="del-card primary" target="_blank">
+            <div class="del-icon">📋</div>
+            <div class="del-title">Player Feedback Insight Report</div>
+            <div class="del-desc">
+              รายงานหลักแบบ Interactive — ครอบคลุม Executive Summary, Charts,
+              Top Issues, Recommendations, Risk Assessment, Data Table 300
+              รายการ, Validation, Workflow และ Prompt Log
+            </div>
+            <div class="del-action">🔗 เปิด report.html →</div>
+          </a>
+
+          <a href="feedback_analysis.xlsx" class="del-card success" download>
+            <div class="del-icon">📊</div>
+            <div class="del-title">Feedback Analysis Spreadsheet</div>
+            <div class="del-desc">
+              Excel workbook 2 sheets — <strong>Feedback_Analysis</strong>: 300
+              rows พร้อม AI fields (Sentiment, Category, Priority, AI Summary,
+              Suggested Owner) และ <strong>Summary_Stats</strong>:
+              สรุปสถิติทุกมิติ
+            </div>
+            <div class="del-action">⬇️ ดาวน์โหลด feedback_analysis.xlsx →</div>
+          </a>
+
+          <a href="prompt_log.html" class="del-card warning" target="_blank">
+            <div class="del-icon">📝</div>
+            <div class="del-title">AI Chat Log / Prompt Log</div>
+            <div class="del-desc">
+              บันทึก conversation จริงระหว่าง User กับ AI — 7 prompts
+              ครบทุกขั้นตอน: System Setup, Sentiment, Category, Priority,
+              Summary, Routing และ Batch Test 10 รายการ
+            </div>
+            <div class="del-action">🔗 เปิด prompt_log.html →</div>
+          </a>
+
+          <a href="report.html#workflow" class="del-card" target="_blank">
+            <div class="del-icon">🔄</div>
+            <div class="del-title">Workflow Explanation</div>
+            <div class="del-desc">
+              อธิบาย 8 ขั้นตอน: Data Collection → Sentiment → Category →
+              Priority → Summary → Insight Aggregation → Report Generation →
+              Validation
+            </div>
+            <div class="del-action">🔗 ดู Workflow section →</div>
+          </a>
+
+          <a href="report.html#validation" class="del-card" target="_blank">
+            <div class="del-icon">🔍</div>
+            <div class="del-title">Validation / Human Review</div>
+            <div class="del-desc">
+              สุ่มตรวจ 30 รายการ (10%) พร้อมบันทึกข้อจำกัดของ Rule-based
+              Classification — Sarcasm, Multi-topic Feedback, Slang
+            </div>
+            <div class="del-action">🔗 ดู Validation section →</div>
+          </a>
+
+          <a href="report.html#charts" class="del-card" target="_blank">
+            <div class="del-icon">📈</div>
+            <div class="del-title">Charts &amp; Dashboard</div>
+            <div class="del-desc">
+              กราฟ 5 ชาร์ต: Sentiment Donut, Category Bar, Priority Doughnut,
+              Source Bar, Segment Bar, และ % Negative per Category — สร้างด้วย
+              Chart.js
+            </div>
+            <div class="del-action">🔗 ดู Charts section →</div>
+          </a>
+        </div>
+      </section>
+
+      <!-- SUBMISSION CHECKLIST -->
+      <section style="margin-bottom: 3rem">
+        <h2 class="section-title">Submission Checklist</h2>
+        <div class="checklist">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>งานที่ต้องส่ง</th>
+                <th>Output</th>
+                <th>ประเภท</th>
+                <th>สถานะ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>เตรียมข้อมูล Feedback — Cleaned Feedback Sheet</td>
+                <td>
+                  <a
+                    href="feedback_analysis.xlsx"
+                    style="color: #818cf8"
+                    download
+                    >feedback_analysis.xlsx</a
+                  >
+                </td>
+                <td><span class="badge-req">บังคับ</span></td>
+                <td><span class="check-done">Done</span></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>
+                  ใช้ AI จัดหมวดหมู่ — Sentiment, Category, Priority, Summary,
+                  Owner
+                </td>
+                <td>
+                  <a
+                    href="feedback_analysis.xlsx"
+                    style="color: #818cf8"
+                    download
+                    >Feedback_Analysis sheet</a
+                  >
+                </td>
+                <td><span class="badge-req">บังคับ</span></td>
+                <td><span class="check-done">Done</span></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>สรุป Insight — Top Issues, Pattern, Risk, Next Steps</td>
+                <td>
+                  <a
+                    href="report.html#summary"
+                    style="color: #818cf8"
+                    target="_blank"
+                    >Section 1–3 ใน report.html</a
+                  >
+                </td>
+                <td><span class="badge-req">บังคับ</span></td>
+                <td><span class="check-done">Done</span></td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>ทำ Report — 1–3 หน้า อ่านรู้เรื่องและใช้งานต่อได้</td>
+                <td>
+                  <a href="report.html" style="color: #818cf8" target="_blank"
+                    >report.html</a
+                  >
+                </td>
+                <td><span class="badge-req">บังคับ</span></td>
+                <td><span class="check-done">Done</span></td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>แนบ Prompt Log — Prompts ที่ใช้จริง พร้อมคำอธิบาย</td>
+                <td>
+                  <a
+                    href="prompt_log.html"
+                    style="color: #818cf8"
+                    target="_blank"
+                    >prompt_log.html</a
+                  >
+                  &nbsp;·&nbsp;
+                  <a
+                    href="report.html#promptlog"
+                    style="color: #818cf8"
+                    target="_blank"
+                    >Section 12</a
+                  >
+                </td>
+                <td><span class="badge-req">บังคับ</span></td>
+                <td><span class="check-done">Done</span></td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>อธิบาย Workflow — Data → AI → Clean → Insight → Report</td>
+                <td>
+                  <a
+                    href="report.html#workflow"
+                    style="color: #818cf8"
+                    target="_blank"
+                    >Section 10 ใน report.html</a
+                  >
+                </td>
+                <td><span class="badge-req">บังคับ</span></td>
+                <td><span class="check-done">Done</span></td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>Validation / Human Review — สุ่มตรวจ &amp; บอกข้อจำกัด</td>
+                <td>
+                  <a
+                    href="report.html#validation"
+                    style="color: #818cf8"
+                    target="_blank"
+                    >Section 9 ใน report.html</a
+                  >
+                </td>
+                <td><span class="badge-req">บังคับ</span></td>
+                <td><span class="check-done">Done</span></td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>ทำ Chart — Category / Sentiment / Priority</td>
+                <td>
+                  <a
+                    href="report.html#charts"
+                    style="color: #818cf8"
+                    target="_blank"
+                    >Section 5 ใน report.html</a
+                  >
+                </td>
+                <td><span class="badge-opt">เสริม</span></td>
+                <td><span class="check-done">Done</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- WORKFLOW OVERVIEW -->
+      <section style="margin-bottom: 3rem">
+        <h2 class="section-title">Workflow Overview</h2>
+        <div class="wf-grid">
+          <div class="wf-card">
+            <div class="wf-num">1</div>
+            <div class="wf-icon">📂</div>
+            <div class="wf-label">Data Extraction</div>
+            <div class="wf-sub">Excel → JSON<br />extract_data.py</div>
+          </div>
+          <div class="wf-card">
+            <div class="wf-num">2</div>
+            <div class="wf-icon">🤖</div>
+            <div class="wf-label">AI Classification</div>
+            <div class="wf-sub">
+              Sentiment, Category, Priority<br />classify.py
+            </div>
+          </div>
+          <div class="wf-card">
+            <div class="wf-num">3</div>
+            <div class="wf-icon">✍️</div>
+            <div class="wf-label">Summary Gen</div>
+            <div class="wf-sub">1 ประโยคต่อรายการ<br />classify.py</div>
+          </div>
+          <div class="wf-card">
+            <div class="wf-num">4</div>
+            <div class="wf-icon">📊</div>
+            <div class="wf-label">Insight Aggregation</div>
+            <div class="wf-sub">Top Issues, Stats<br />generate_report.py</div>
+          </div>
+          <div class="wf-card">
+            <div class="wf-num">5</div>
+            <div class="wf-icon">📋</div>
+            <div class="wf-label">Report Generation</div>
+            <div class="wf-sub">HTML + Charts<br />generate_report.py</div>
+          </div>
+          <div class="wf-card">
+            <div class="wf-num">6</div>
+            <div class="wf-icon">🔍</div>
+            <div class="wf-label">Validation</div>
+            <div class="wf-sub">
+              Human Review 30 samples<br />10% spot-check
+            </div>
+          </div>
+          <div class="wf-card">
+            <div class="wf-num">7</div>
+            <div class="wf-icon">📤</div>
+            <div class="wf-label">Deployment</div>
+            <div class="wf-sub">Firebase / Vercel<br />static hosting</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p>
+        AI Workflow Challenge — Player Feedback Insight Report · Submitted June
+        5, 2026
+      </p>
+      <p style="margin-top: 0.4rem">
+        Built with Python (classify.py, extract_data.py, generate_report.py) ·
+        Visualization: Chart.js · Deploy: Firebase / Vercel
+      </p>
+    </footer>
+  </body>
+</html>
